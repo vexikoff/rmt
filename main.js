@@ -42,7 +42,6 @@ const bleed = gid("bleed");
 const shake = gid("shake");
 const xcolor = gid("xcolor");
 const xoutcolor = gid("xoutcolor");
-const xstyle = gid("xstyle");
 const xnone = gid("xnone");
 const ximg = gid("ximg");
 const xcan = gid("xcan");
@@ -65,6 +64,17 @@ const stby = gid("stby");
 const hdr = gid("hdr");
 const mgm = document.querySelectorAll(".mgm");
 const sign = gid("sign");
+const xstyle = document.createElement("select");
+xstyle.className = "txtinp";
+xstyle.id = "xstyle";
+xstyle.style.maxWidth = "142px";
+xstyle.style.marginLeft = "auto";
+xstyle.style.colorScheme = "dark";
+gid("xstyle").replaceWith(xstyle);
+const xdesc = xstyle.parentElement.querySelector(".rdesc");
+if (xdesc) {
+    xdesc.textContent = "Форма прицела: обычный крест, точка или Т-образный.";
+}
 const pend = new Map();
 let opt = 0;
 let nid = 1;
@@ -139,6 +149,12 @@ const cht = [
     { id: "xvis", k: "dynamicVisibility", key: "dynamic_visibility" }
 ];
 
+const xstyles = [
+    ["Default", "Обычный"],
+    ["Dot", "Точка"],
+    ["TShape", "Т-образный"]
+];
+
 const prion = ["Обычный", "Выше обычного", "Высокий"];
 
 const tabs = [
@@ -153,12 +169,6 @@ const tabs = [
 
 const pnames = ["Низкие", "Средние", "Высокие"];
 const pkeys = ["low", "medium", "high"];
-
-const profknown = {
-    "prod-a": "Основной",
-    "prod--b": "Запасной",
-    "testing": "Тестовый"
-};
 
 const glfw = {
     KeyA: 65, KeyB: 66, KeyC: 67, KeyD: 68, KeyE: 69, KeyF: 70, KeyG: 71, KeyH: 72,
@@ -443,7 +453,36 @@ function unhex(s) {
 }
 
 function plabel(name, idx) {
-    return profknown[name] || "Профиль " + (idx + 1);
+    let m = /^prod-(.+)$/.exec(name);
+    if (m) {
+        return "Основной " + m[1].replace(/^-+/, "").toUpperCase();
+    }
+    if (name === "prod") {
+        return "Основной";
+    }
+    m = /^testing-profile-(\d+)$/.exec(name);
+    if (m) {
+        return "Тестовый " + m[1];
+    }
+    m = /^testing-(\d+)$/.exec(name);
+    if (m) {
+        return "Тестовый " + m[1];
+    }
+    if (name === "testing") {
+        return "Тестовый";
+    }
+    m = /^devblog-(\d+)$/.exec(name);
+    if (m) {
+        return "Девблог " + m[1];
+    }
+    m = /^devnotes-(\d+)$/.exec(name);
+    if (m) {
+        return "Девноутс " + m[1];
+    }
+    if (typeof idx === "number" && idx >= 0) {
+        return "Профиль " + (idx + 1);
+    }
+    return name;
 }
 
 function pfill(items, active) {
@@ -459,6 +498,23 @@ function pfill(items, active) {
         psel.value = active;
     }
     praw.textContent = active ? "Папка: " + active : "";
+}
+
+function xstylefill(val) {
+    xstyle.textContent = "";
+    const list = xstyles.slice();
+    if (val && !list.some((s) => s[0] === val)) {
+        list.push([val, val]);
+    }
+    list.forEach((s) => {
+        const o = document.createElement("option");
+        o.value = s[0];
+        o.textContent = s[1];
+        xstyle.appendChild(o);
+    });
+    if (val) {
+        xstyle.value = val;
+    }
 }
 
 if (shot) {
@@ -494,7 +550,7 @@ function drawx() {
     const dot = Number(xdot.value) * sc;
     const out = xout.checked;
     const ow = Number(xow.value) * sc;
-    const style = cur.profile.crosshair.style || "Dot";
+    const style = xstyle.value || "Dot";
     ctx.globalAlpha = op;
     function bar(x, y, w, h) {
         if (out) {
@@ -504,13 +560,27 @@ function drawx() {
         ctx.fillStyle = xcolor.value;
         ctx.fillRect(x, y, w, h);
     }
-    if (style.toLowerCase() !== "dot") {
+    function disc(x, y, r) {
+        if (out) {
+            ctx.fillStyle = xoutcolor.value;
+            ctx.beginPath();
+            ctx.arc(x, y, r + ow, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.fillStyle = xcolor.value;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    if (style !== "Dot") {
         bar(cx - wid / 2, cy - gap - len, wid, len);
-        bar(cx - wid / 2, cy + gap, wid, len);
         bar(cx - gap - len, cy - wid / 2, len, wid);
         bar(cx + gap, cy - wid / 2, len, wid);
+        if (style !== "TShape") {
+            bar(cx - wid / 2, cy + gap, wid, len);
+        }
     }
-    bar(cx - dot / 2, cy - dot / 2, dot, dot);
+    disc(cx, cy, dot / 2);
     ctx.globalAlpha = 1;
 }
 
@@ -599,7 +669,7 @@ function fill(st) {
         });
         xcolor.value = hex(ch.color);
         xoutcolor.value = hex(ch.outlineColor);
-        xstyle.textContent = ch.style || "—";
+        xstylefill(ch.style || "Dot");
         const chv = {
             xop: ch.opacity,
             xgap: ch.gap,
@@ -783,7 +853,7 @@ function drawbk(items) {
         nm.textContent = "Копия от " + it.created;
         const dt = document.createElement("span");
         dt.className = "bkdate";
-        dt.textContent = it.profile ? "Профиль: " + plabel(it.profile, 0) : it.created;
+        dt.textContent = it.profile ? "Профиль: " + plabel(it.profile) : it.created;
         info.appendChild(nm);
         info.appendChild(dt);
         const acts = document.createElement("div");
@@ -1036,6 +1106,14 @@ cht.forEach((c) => {
         }
         push("setCrosshair", { key: c.key, value: node.checked });
     });
+});
+
+xstyle.addEventListener("change", () => {
+    drawx();
+    if (lock) {
+        return;
+    }
+    push("setCrosshair", { key: "style", value: xstyle.value });
 });
 
 xcolor.addEventListener("input", () => {
@@ -1312,6 +1390,7 @@ window.addEventListener("mousedown", (e) => {
 
 window.addEventListener("resize", drawx);
 
+xstylefill("Dot");
 obs.observe(sign);
 labels();
 loadbk();
