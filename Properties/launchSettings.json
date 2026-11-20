@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "RustMeTweaker (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "RustMeTweaker (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
