@@ -21,7 +21,6 @@ const dpath = gid("dpath");
 const jpath = gid("jpath");
 const papply = gid("papply");
 const psel = gid("psel");
-const praw = gid("praw");
 const pcopy = gid("pcopy");
 const bcom = gid("bcom");
 const bopt = gid("bopt");
@@ -64,6 +63,7 @@ const stby = gid("stby");
 const hdr = gid("hdr");
 const mgm = document.querySelectorAll(".mgm");
 const sign = gid("sign");
+gid("praw").remove();
 const xstyle = document.createElement("select");
 xstyle.className = "txtinp";
 xstyle.id = "xstyle";
@@ -75,6 +75,32 @@ const xdesc = xstyle.parentElement.querySelector(".rdesc");
 if (xdesc) {
     xdesc.textContent = "Форма прицела: обычный крест, точка или Т-образный.";
 }
+const xzoom = document.createElement("input");
+xzoom.type = "range";
+xzoom.id = "xzoom";
+xzoom.min = "1";
+xzoom.max = "16";
+xzoom.step = "1";
+xzoom.value = "4";
+const xzoomval = document.createElement("span");
+xzoomval.className = "sldval";
+xzoomval.id = "xzoomval";
+xzoomval.textContent = "×4";
+const xzoomwrap = document.createElement("div");
+xzoomwrap.className = "sldwrap";
+xzoomwrap.appendChild(xzoom);
+xzoomwrap.appendChild(xzoomval);
+const xzoomlabel = document.createElement("p");
+xzoomlabel.textContent = "Масштаб предпросмотра";
+const xzoomdesc = document.createElement("span");
+xzoomdesc.className = "rdesc";
+xzoomdesc.textContent = "Только увеличение просмотра, чтобы разглядеть прицел. На игру не влияет.";
+xzoomlabel.appendChild(xzoomdesc);
+const xzoomrow = document.createElement("div");
+xzoomrow.className = "row";
+xzoomrow.appendChild(xzoomlabel);
+xzoomrow.appendChild(xzoomwrap);
+rcross.insertBefore(xzoomrow, xstyle.parentElement);
 const pend = new Map();
 let opt = 0;
 let nid = 1;
@@ -497,7 +523,6 @@ function pfill(items, active) {
     if (active) {
         psel.value = active;
     }
-    praw.textContent = active ? "Папка: " + active : "";
 }
 
 function xstylefill(val) {
@@ -524,6 +549,10 @@ if (shot) {
 }
 ximg.addEventListener("error", () => {
     ximg.style.display = "none";
+    drawx();
+});
+ximg.addEventListener("load", () => {
+    drawx();
 });
 
 function drawx() {
@@ -540,13 +569,16 @@ function drawx() {
     if (!cur || !cur.found || !cur.profile.hasCrosshair) {
         return;
     }
+    const natw = ximg.naturalWidth || 2560;
+    const nath = ximg.naturalHeight || 1440;
+    const base = Math.max(box.width / natw, box.height / nath);
+    const sc = base * Number(xzoom.value);
     const cx = box.width / 2;
     const cy = box.height / 2;
-    const sc = 4;
     const op = Number(xop.value);
     const gap = Number(xgap.value) * sc;
     const len = Number(xlen.value) * sc;
-    const wid = Math.max(1, Number(xwid.value) * sc);
+    const wid = Number(xwid.value) * sc;
     const dot = Number(xdot.value) * sc;
     const out = xout.checked;
     const ow = Number(xow.value) * sc;
@@ -612,7 +644,7 @@ function fill(st) {
     }
 
     dis(false);
-    linfo.textContent = "Профиль: " + st.account + " · " + plabel(st.activeProfile, st.profiles.findIndex((p) => p.name === st.activeProfile));
+    linfo.textContent = st.account ? "Аккаунт: " + st.account + " · общие настройки для всех профилей" : "Общие настройки для всех профилей";
 
     af.checked = st.profile.afLevel === 0;
     crunk.checked = Boolean(st.autoCrunk);
@@ -1114,6 +1146,11 @@ xstyle.addEventListener("change", () => {
         return;
     }
     push("setCrosshair", { key: "style", value: xstyle.value });
+});
+
+xzoom.addEventListener("input", () => {
+    xzoomval.textContent = "×" + xzoom.value;
+    drawx();
 });
 
 xcolor.addEventListener("input", () => {
