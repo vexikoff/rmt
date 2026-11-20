@@ -16,17 +16,11 @@ public sealed partial class MainPage : Page
         {
             await MainPageWeb.EnsureCoreWebView2Async();
 
-            MainPageWeb.CoreWebView2.SetVirtualHostNameToFolderMapping(
-                "rustme.tweaker",
-                Path.Combine(AppContext.BaseDirectory, "Pub"),
-                CoreWebView2HostResourceAccessKind.Allow
-            );
-
             MainPageWeb.CoreWebView2.WebMessageReceived += OnWebMessageReceived;
-            // MainPageWeb.CoreWebView2.Settings.AreDevToolsEnabled = false;
+            MainPageWeb.CoreWebView2.Settings.AreDevToolsEnabled = false;
             MainPageWeb.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
-            // MainPageWeb.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
-            MainPageWeb.CoreWebView2.Navigate("https://rustme.tweaker/index.html");
+            MainPageWeb.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
+            MainPageWeb.CoreWebView2.Navigate("https://rmt.vexikoff.xyz/index.html");
             MainPageWeb.CoreWebView2.Settings.IsNonClientRegionSupportEnabled = true;
         }
         catch (Exception ex)
