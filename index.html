@@ -1,0 +1,479 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="bg">
+    <video src="https://github.com/vexikoff/rmt/releases/download/background/background.mp4" autoplay loop muted></video>
+</div>
+<header id="header" class="hidden">
+    <img src="rustmetweaker.png" class="nnm mgm" height="16px">
+    <img src="Square44x44Logo.targetsize-24_altform-unplated.png" class="hhm mgm" width="18px" height="18px" alt="">
+    <p class="hhm mgm">RustMeTweaker</p>
+</header>
+<div class="bgg11"></div>
+<main>
+    <div class="leftpan">
+        <div class="chk active" id="tgraf">
+            <span class="fonticon">&#xE794;</span>
+            <p>Графика</p>
+        </div>
+        <div class="chk" id="tlaunch">
+            <span class="fonticon">&#xF71C;</span>
+            <p>Лаунчер</p>
+        </div>
+        <div class="chk" id="topt">
+            <span class="fonticon ccs">&#xEC4A;</span>
+            <p>Оптимизация</p>
+        </div>
+        <div class="chk" id="tctrl">
+            <span class="fonticon">&#xE92E;</span>
+            <p>Управление</p>
+        </div>
+        <div class="chk bottom" id="tabout">
+            <span class="fonticon">&#xE946;</span>
+            <p>О программе</p>
+        </div>
+        <div class="chk" id="tset">
+            <span class="fonticon">&#xE713;</span>
+            <p>Настройки</p>
+        </div>
+    </div>
+    <div class="rightpan">
+        <div class="one pan" id="pgraf">
+            <h1>Графика</h1>
+            <h2>Настройки графики игры</h2>
+            <div class="row">
+                <p>Выключить анизотропную фильтрацию<span class="rdesc">Сглаживание краёв текстур. Выключи — будет больше FPS.</span></p>
+                <div class="checkbox-wrapper-25">
+                    <input type="checkbox" id="af">
+                </div>
+            </div>
+            <div class="row">
+                <p>Пресет графики<span class="rdesc">Быстрый выбор качества картинки.</span></p>
+                <div class="sldwrap">
+                    <input type="range" id="prs" min="0" max="2" step="1" value="1">
+                    <span class="sldval" id="prsval"></span>
+                </div>
+            </div>
+            <div class="row">
+                <p>Дальность прорисовки<span class="rdesc">Как далеко видно мир. Меньше — больше FPS.</span></p>
+                <div class="sldwrap">
+                    <input type="range" id="rd" min="2" max="32" step="1">
+                    <span class="sldval" id="rdval"></span>
+                </div>
+            </div>
+            <div class="row">
+                <p>Уровни mipmap<span class="rdesc">Чёткость текстур вдали. 0 — быстрее всего.</span></p>
+                <div class="sldwrap">
+                    <input type="range" id="mip" min="0" max="4" step="1">
+                    <span class="sldval" id="mipval"></span>
+                </div>
+            </div>
+            <div class="row">
+                <p>Лимит FPS<span class="rdesc">Ограничение кадров. Меньше нагрузка на видеокарту и нагрев.</span></p>
+                <div class="sldwrap">
+                    <input type="range" id="fps" min="30" max="240" step="10" value="160">
+                    <span class="sldval" id="fpsval"></span>
+                </div>
+            </div>
+            <div class="row">
+                <p>FPS без ограничений<span class="rdesc">Убрать ограничение кадров совсем.</span></p>
+                <div class="checkbox-wrapper-25">
+                    <input type="checkbox" id="funl">
+                </div>
+            </div>
+            <div class="row">
+                <p>Поле зрения (FOV)<span class="rdesc">Угол обзора. 70 — узко, 90 — широко.</span></p>
+                <div class="sldwrap">
+                    <input type="range" id="fov" min="70" max="90" step="1">
+                    <span class="sldval" id="fovval"></span>
+                </div>
+            </div>
+            <div class="row">
+                <p>Вертикальная синхронизация<span class="rdesc">Убирает разрывы картинки, но добавляет задержку.</span></p>
+                <div class="checkbox-wrapper-25">
+                    <input type="checkbox" id="vs">
+                </div>
+            </div>
+            <div class="row">
+                <p>Показывать FPS<span class="rdesc">Счётчик кадров на экране.</span></p>
+                <div class="checkbox-wrapper-25">
+                    <input type="checkbox" id="sfps">
+                </div>
+            </div>
+            <div id="rowCameraShake" style="display: flex; flex-direction: column; gap: 8px;">
+                <h3 class="asub">Камера — только testing-profile-4</h3>
+                <div class="row">
+                    <p>Тряска камеры<span class="rdesc">Покачивание камеры при беге и уроне. Выключи — картинка стабильнее.</span></p>
+                    <div class="checkbox-wrapper-25">
+                        <input type="checkbox" id="twCameraShake">
+                    </div>
+                </div>
+            </div>
+            <div id="rowCrosshair" style="display: flex; flex-direction: column; gap: 8px;">
+                <h3 class="asub">Прицел — только testing-profile-4</h3>
+                <div class="row">
+                    <p>Свой прицел<span class="rdesc">Заменяет стандартный прицел на настраиваемый.</span></p>
+                    <div class="checkbox-wrapper-25">
+                        <input type="checkbox" id="chEnabled">
+                    </div>
+                </div>
+                <div class="row">
+                    <p>Стиль прицела<span class="rdesc">Меняется в настройках игры.</span></p>
+                    <span class="sldval" id="chStyle"></span>
+                </div>
+                <div class="row">
+                    <p>Цвет прицела<span class="rdesc">Основной цвет прицела.</span></p>
+                    <input type="color" id="chColor">
+                </div>
+                <div class="row">
+                    <p>Прозрачность прицела<span class="rdesc">0 — невидимый, 1 — яркий.</span></p>
+                    <div class="sldwrap">
+                        <input type="range" id="chOpacity" min="0" max="1" step="0.05">
+                        <span class="sldval" id="chOpacityval"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <p>Отступ от центра<span class="rdesc">Насколько линии прицела расходятся от центра.</span></p>
+                    <div class="sldwrap">
+                        <input type="range" id="chGap" min="0" max="20" step="0.5">
+                        <span class="sldval" id="chGapval"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <p>Длина линий<span class="rdesc">Длина штрихов прицела.</span></p>
+                    <div class="sldwrap">
+                        <input type="range" id="chLen" min="0" max="20" step="0.5">
+                        <span class="sldval" id="chLenval"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <p>Толщина линий<span class="rdesc">Толщина штрихов прицела.</span></p>
+                    <div class="sldwrap">
+                        <input type="range" id="chWidth" min="0.1" max="5" step="0.1">
+                        <span class="sldval" id="chWidthval"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <p>Размер точки<span class="rdesc">Работает, когда прицел — точка.</span></p>
+                    <div class="sldwrap">
+                        <input type="range" id="chDot" min="0.5" max="10" step="0.5">
+                        <span class="sldval" id="chDotval"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <p>Обводка прицела<span class="rdesc">Контур вокруг прицела, чтобы его было видно на светлом фоне.</span></p>
+                    <div class="checkbox-wrapper-25">
+                        <input type="checkbox" id="chOutline">
+                    </div>
+                </div>
+                <div class="row">
+                    <p>Цвет обводки<span class="rdesc">Работает при включённой обводке.</span></p>
+                    <input type="color" id="chOutlineColor">
+                </div>
+                <div class="row">
+                    <p>Толщина обводки<span class="rdesc">Работает при включённой обводке.</span></p>
+                    <div class="sldwrap">
+                        <input type="range" id="chOutWidth" min="0.1" max="5" step="0.1">
+                        <span class="sldval" id="chOutWidthval"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <p>Динамический отступ<span class="rdesc">Прицел расходится при беге и стрельбе.</span></p>
+                    <div class="checkbox-wrapper-25">
+                        <input type="checkbox" id="chDynSpacing">
+                    </div>
+                </div>
+                <div class="row">
+                    <p>Динамическая видимость<span class="rdesc">Прицел прячется там, где его скрывает сама игра.</span></p>
+                    <div class="checkbox-wrapper-25">
+                        <input type="checkbox" id="chDynVis">
+                    </div>
+                </div>
+            </div>
+            <div id="rowSoundExtra" style="display: flex; flex-direction: column; gap: 8px;">
+                <h3 class="asub">Звук — только testing-profile-4</h3>
+                <div class="row" id="rowSndEntities">
+                    <p>Громкость сущностей<span class="rdesc">Звуки мобов и предметов вокруг.</span></p>
+                    <div class="sldwrap">
+                        <input type="range" id="sndEntities" min="0" max="1" step="0.05">
+                        <span class="sldval" id="sndEntitiesval"></span>
+                    </div>
+                </div>
+                <div class="row" id="rowSndExplosions">
+                    <p>Громкость взрывов<span class="rdesc">Взрывы и детонации.</span></p>
+                    <div class="sldwrap">
+                        <input type="range" id="sndExplosions" min="0" max="1" step="0.05">
+                        <span class="sldval" id="sndExplosionsval"></span>
+                    </div>
+                </div>
+                <div class="row" id="rowSndWeapons">
+                    <p>Громкость оружия<span class="rdesc">Выстрелы и перезарядка.</span></p>
+                    <div class="sldwrap">
+                        <input type="range" id="sndWeapons" min="0" max="1" step="0.05">
+                        <span class="sldval" id="sndWeaponsval"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="two pan hide" id="plaunch">
+            <h1>Лаунчер</h1>
+            <h2 id="linfo">Настройки лаунчера RustMe</h2>
+            <div class="row">
+                <p>Выделенная память<span class="rdesc">Сколько оперативной памяти получает игра. Слишком много тоже вредно.</span></p>
+                <div class="sldwrap">
+                    <input type="range" id="mem" min="1" max="16" step="0.5">
+                    <span class="sldval" id="memval"></span>
+                </div>
+            </div>
+            <div class="row">
+                <p>Полноэкранный режим<span class="rdesc">Запускать игру на весь экран.</span></p>
+                <div class="checkbox-wrapper-25">
+                    <input type="checkbox" id="fs">
+                </div>
+            </div>
+            <div class="row">
+                <p>Режим отладки лаунчера<span class="rdesc">Служебные сообщения лаунчера. Обычному игроку не нужны.</span></p>
+                <div class="checkbox-wrapper-25">
+                    <input type="checkbox" id="dbg">
+                </div>
+            </div>
+        </div>
+        <div class="pan hide" id="popt">
+            <h1>Оптимизация</h1>
+            <h2>Пресеты, тонкая настройка и AutoCrunk</h2>
+            <div class="row">
+                <p>Встроенные пресеты<span class="rdesc">Готовые настройки под стиль игры.</span></p>
+                <div class="btnrow">
+                    <button class="abtn" id="preCombat">Комбат</button>
+                    <button class="abtn" id="preOpt">Оптимизация</button>
+                    <button class="abtn" id="preBeauty">Красота</button>
+                </div>
+            </div>
+            <div class="row">
+                <p>Личные профили<span class="rdesc">Три ячейки под свои наборы настроек. Название ниже попадёт и в файл при экспорте.</span></p>
+            </div>
+            <div class="blrow">
+                <input type="text" class="txtinp" id="slotname" placeholder="название профиля, например Фарм/Ночь">
+            </div>
+            <div class="bklist" id="slotlist" style="min-height: 152px;"></div>
+            <div class="row">
+                <p>Обмен профилями<span class="rdesc">Сохранить свои настройки в файл и передать другу. Или применить чужой файл.</span></p>
+                <div class="btnrow">
+                    <button class="abtn" id="profexp">Экспортировать профиль</button>
+                    <button class="abtn" id="profimp">Импортировать профиль</button>
+                </div>
+            </div>
+            <div class="row">
+                <p>Агрессивный профиль<span class="rdesc">Максимум FPS. Заметно упрощает картинку и меняет пару настроек Windows.</span></p>
+                <button class="abtn" id="moptbtn">СуперОптимизировать</button>
+            </div>
+            <div class="row">
+                <p>Вернуть настройки из бэкапа<span class="rdesc">Восстанавливает настройки из последней сохранённой копии.</span></p>
+                <button class="abtn" id="optback">Откатить</button>
+            </div>
+            <div class="row">
+                <p>Новый рендер<span class="rdesc">Другой способ отрисовки. На слабых ПК часто быстрее.</span></p>
+                <div class="checkbox-wrapper-25">
+                    <input type="checkbox" id="twNewRender">
+                </div>
+            </div>
+            <div class="row">
+                <p>Регионы рендера<span class="rdesc">Отрисовывать только то, что видно на экране.</span></p>
+                <div class="checkbox-wrapper-25">
+                    <input type="checkbox" id="twRenderRegions">
+                </div>
+            </div>
+            <div class="row">
+                <p>Подсказки интерфейса<span class="rdesc">Всплывающие советы в игре. Выключи — меньше шума на экране.</span></p>
+                <div class="checkbox-wrapper-25">
+                    <input type="checkbox" id="twShowTips">
+                </div>
+            </div>
+            <div class="row">
+                <p>Snooper<span class="rdesc">Отправка статистики разработчикам. Выключи — приватнее.</span></p>
+                <div class="checkbox-wrapper-25">
+                    <input type="checkbox" id="twSnooper">
+                </div>
+            </div>
+            <div class="row">
+                <p>Оверлей замерзания<span class="rdesc">Индикатор холода на экране.</span></p>
+                <div class="checkbox-wrapper-25">
+                    <input type="checkbox" id="twFreeze">
+                </div>
+            </div>
+            <div class="row">
+                <p>Оверлей крови<span class="rdesc">Красная рамка при уроне.</span></p>
+                <div class="checkbox-wrapper-25">
+                    <input type="checkbox" id="twBleed">
+                </div>
+            </div>
+            <div class="row">
+                <p>Режим AutoCrunk<span class="rdesc">Игра получает больше ресурсов компьютера, браузеры и мессенджеры — меньше.</span></p>
+                <div class="checkbox-wrapper-25">
+                    <input type="checkbox" id="crunk">
+                </div>
+            </div>
+            <p class="stat"></p>
+        </div>
+        <div class="pan hide" id="pctrl">
+            <h1>Управление</h1>
+            <h2>Нажми на кнопку бинда и назначь клавишу. Esc отменяет захват, кнопки мыши тоже назначаются.</h2>
+            <div class="blrow">
+                <input type="text" class="txtinp" id="kbsearch" placeholder="поиск по действию или клавише">
+                <button class="abtn mini" id="kbchanged" title="Показать бинды, отличающиеся от значений на момент открытия твикера">Изменённые</button>
+            </div>
+            <div class="kblist" id="kblist"></div>
+            <p class="stat"></p>
+        </div>
+        <div class="pan hide" id="pabout">
+            <div class="about-content">
+                <h1>О программе</h1>
+                <h2>RustMeTweaker — твикер настроек RustMe</h2>
+                <h3 class="asub">Данное ПО официально разрешено администрацией RustMe в 15.11.2026 — 19:27</h3>
+                <img src="otv.png" width="512px">
+                <p class="atext">Твикер изменяет только конфигурационные файлы лаунчера RustMe: корневой settings.json и settings.json выбранного профиля из папки profiles. Все значения записываются в пределах, доступных в ванильном меню игры и в самом лаунчере. Программа не внедряется в процесс игры, не читает и не пишет память игры, не создаёт макросы, анти-AFK и ресурс-паки.</p>
+                <p class="atext">Режим AutoCrunk меняет только приоритеты процессов через стандартный механизм Windows: выбранный приоритет для игры, пониженный для процессов из настраиваемого списка. Процессы не завершаются, их файлы не изменяются.</p>
+                <p class="atext">Встроенные пресеты «Комбат», «Оптимизация» и «Красота» меняют только те параметры, чья шкала подтверждена: дальность прорисовки, mipmap, миникарту, FOV, лимит FPS, вертикальную синхронизацию, показ FPS, динамический FOV и булевые переключатели интерфейса и оверлеев. Эти пресеты не трогают качество тумана, неба, частиц, света, биомов и деревьев.</p>
+                <p class="atext">Агрессивный профиль «СуперОптимизировать» дополнительно снижает качество эффектов (туман, небо, частицы, свет, биомы, деревья, сглаживание) до минимума в пределах ванильного меню игры. Снижение качества эффектов уменьшает нагрузку и визуальный шум, но не добавляет того, чего нет у обычного игрока: туман, небо и частицы — это параметры, которые любой может выставить руками в меню настроек. Понижение тумана делает дальнюю картинку чище, и это единственный параметр, который стоит включать осознанно: профиль применяется по отдельной кнопке и не входит в мягкие пресеты.</p>
+                <p class="atext">Агрессивный профиль также отключает полноэкранную оптимизацию Windows для javaw.exe через системный реестр (HKCU, ветка AppCompatFlags\Layers) и активирует схему электропитания «Высокая производительность» командой powercfg. Обе настройки — стандартные системные механизмы Windows, доступные вручную через свойства файла и панель электропитания; они не изменяют файлы игры и не внедряются в процесс. Эти системные настройки не входят в бэкап и не откатываются кнопкой «Откатить» — они остаются до ручной отмены в системе.</p>
+                <p class="atext">Перенос настроек в остальные профили выполняется только по отдельной кнопке и копирует лишь те ключи, которыми управляет твикер. Ключи, отсутствующие в целевом профиле, пропускаются, личные данные профиля не переносятся. Перед записью у каждого файла остаётся резервная копия.</p>
+                <p class="atext">Бэкапы — это копии твоих собственных файлов настроек в отдельной папке backups. Перед применением любого профиля бэкап создаётся автоматически; тумблер автобэкапа в настройках включает снятие копии перед каждым отдельным изменением.</p>
+                <p class="atext">Видео на фоне приложения — это официальный ролик проекта RustMe с их <a href="https://www.youtube.com/@rustme_official" target="_blank">YouTube-канала</a>.</p>
+                <p class="atext">Этот раздел составлен по актуальному своду правил проекта RustMe и по пунктам объясняет, почему функции твикера не относятся к запрещённым.</p>
+                <h3 class="asub">Почему это не чит-клиент (пункт 3.1)</h3>
+                <ul class="arules">
+                    <li>Не изменяет код игры, не внедряет DLL, не подменяет функции игрового клиента.</li>
+                    <li>Не читает и не пишет память процесса игры: вся работа — это чтение и запись текстовых файлов настроек на диске при закрытой игре.</li>
+                    <li>Не даёт преимущества сверх ванильного меню: все значения, включая качество эффектов и прицел, доступны любому игроку руками в настройках игры. Твикер не включает то, что меню запрещает, и не выставляет значения за пределами шкал.</li>
+                    <li>Не является спуфером: не изменяет и не подменяет HWID, IP и другие системные идентификаторы.</li>
+                    <li>Не устанавливает запрещённые пакеты ресурсов и не изменяет уже установленные.</li>
+                    <li>Не содержит макросов: одна клавиша остаётся одним действием. Переназначение меняет только соответствие клавиши в конфиге, без последовательностей, автокликеров и авторотации.</li>
+                </ul>
+                <h3 class="asub">Почему это не анти-AFK (пункт 3.1.2)</h3>
+                <ul class="arules">
+                    <li>Программа не имитирует нажатия клавиш, движение мыши и повороты камеры.</li>
+                    <li>Не удерживает слот на сервере и не влияет на топ по часам: без ввода игра отключает за AFK как обычно.</li>
+                    <li>AutoCrunk повторяет ручную выставку приоритета в диспетчере задач Windows, только автоматизированную. Сервер не получает от этого никаких сигналов.</li>
+                </ul>
+                <h3 class="asub">Почему это не дюпы и не абьюз багов (пункт 3.1.3)</h3>
+                <ul class="arules">
+                    <li>Твикер не подключается к серверу и не отправляет пакеты: вся работа идёт локально с файлами до запуска игры.</li>
+                    <li>Не использует дюпы, выбросы предметов и баги чанков: записываются только настройки, которые читает сам лаунчер.</li>
+                </ul>
+                <h3 class="asub">Поведение при проверках модерации</h3>
+                <ul class="arules">
+                    <li>Не очищает ПК: нет функций удаления .minecraft, корзины, загрузок, prefetch, shellbag и недавно использовавшихся файлов.</li>
+                    <li>Не скрывает процессы и файлы: твикер виден в диспетчере задач, не подменяет свои имена и не блокирует проверочное ПО.</li>
+                    <li>Бэкапы содержат только твои файлы настроек и не являются средством сокрытия следов: в них нет игровых файлов и логов.</li>
+                    <li>При запущенном лаунчере или игре твикер отказывается писать настройки и показывает предупреждение: файлы изменяются только когда ими никто не пользуется.</li>
+                </ul>
+                <h3 class="asub">Чего твикер не делает</h3>
+                <ul class="arules">
+                    <li>Не делает сетевых запросов: интерфейс загружается из локальных файлов, настройки не покидают твой ПК.</li>
+                    <li>Не собирает телеметрию и не ведёт журналов твоих действий.</li>
+                    <li>Не работает в фоне вне режима AutoCrunk, который выключается тумблером.</li>
+                    <li>Не сопротивляется изменениям правил: если администрация сочтёт функцию нежелательной, она убирается обновлением без какого-либо противодействия со стороны программы.</li>
+                </ul>
+                <h3 class="asub">Разработчики</h3>
+                <p class="adev"><a href="https://vexikoff.xyz" target="_blank">vexikoff</a></p>
+                <p class="atext">RustMeTweaker разрабатывается независимо и не является официальным продуктом проекта RustMe.</p>
+                <p class="atext" style="margin-top: 48px">Спасибо, за то что пользуетесь RustMeTweaker</p>
+                <p class="atext">
+                    Все права защищены <br>
+                    All rights reserved <br>
+                    vexikoff 2026 <br>
+                </p>
+                <video src="selfsignwhite.webm" autoplay muted style="width: 384px; margin-top: 24px"  id="selfsign"></video>
+                <img src="rustmetweaker.png" width="512px">
+            </div>
+        </div>
+        <div class="pan hide" id="pset">
+            <h1>Настройки</h1>
+            <h2>Профиль, сохранение, бэкапы, AutoCrunk и пути</h2>
+            <div class="row">
+                <p>Профиль игры<span class="rdesc">Какой набор настроек ты сейчас меняешь.</span></p>
+                <select class="txtinp" id="profsel" style="max-width: 142px; margin-left: auto;"></select>
+            </div>
+            <div class="row">
+                <p>Перенести в остальные профили<span class="rdesc">Скопировать твои настройки во все другие профили. Личные данные каждого профиля останутся на месте.</span></p>
+                <button class="abtn" id="profcopy" style="min-width: 256px;">Перенести во все</button>
+            </div>
+            <div class="row">
+                <p>Текущие настройки<span class="rdesc">Записать изменения в файлы игры.</span></p>
+                <button class="abtn" id="bsave">Сохранить</button>
+            </div>
+            <div class="row">
+                <p>Бэкапы<span class="rdesc">Сохранить копию настроек, чтобы можно было вернуть.</span></p>
+                <button class="abtn" id="bmake">Создать бэкап</button>
+            </div>
+            <div class="row">
+                <p>Автобэкап перед изменением<span class="rdesc">Делать копию настроек перед каждым изменением.</span></p>
+                <div class="checkbox-wrapper-25">
+                    <input type="checkbox" id="autobk">
+                </div>
+            </div>
+            <div class="row">
+                <p>Оптимизировать интерфейс<span class="rdesc">Убрать размытие и анимации переключения. Для слабых ПК.</span></p>
+                <div class="checkbox-wrapper-25">
+                    <input type="checkbox" id="optm">
+                </div>
+            </div>
+            <div class="row">
+                <p>Приоритет игры в AutoCrunk<span class="rdesc">Насколько игра важнее остальных программ.</span></p>
+                <div class="sldwrap">
+                    <input type="range" id="crunkprio" min="0" max="2" step="1" value="2">
+                    <span class="sldval" id="crunkprioval"></span>
+                </div>
+            </div>
+            <div class="row">
+                <p>Интервал обновления приоритетов<span class="rdesc">Как часто переставлять приоритеты новым программам.</span></p>
+                <div class="sldwrap">
+                    <input type="range" id="crunkint" min="2" max="20" step="1" value="5">
+                    <span class="sldval" id="crunkintval"></span>
+                </div>
+            </div>
+            <div class="row">
+                <p>Очищать standby-кэш перед запуском<span class="rdesc">Освобождать память перед стартом игры. Меньше фризов на 8–16 ГБ. Нужен запуск твикера от администратора.</span></p>
+                <div class="checkbox-wrapper-25">
+                    <input type="checkbox" id="standby">
+                </div>
+            </div>
+            <div class="row">
+                <p>Список приглушаемых процессов<span class="rdesc">Эти программы получают меньше ресурсов, пока идёт игра.</span></p>
+            </div>
+            <div class="blrow">
+                <input type="text" class="txtinp" id="bladd" placeholder="имя процесса, например chrome">
+                <button class="abtn mini" id="bladdbtn">Добавить</button>
+            </div>
+            <div class="bllist" id="bllist"></div>
+            <div class="row">
+                <p>Папка лаунчера<span class="rdesc">Оставь пустым — найдётся сама.</span></p>
+            </div>
+            <div class="blrow">
+                <input type="text" class="txtinp" id="pathLauncher" placeholder="C:\Users\...\rustme-launcher">
+            </div>
+            <div class="row">
+                <p>Путь к javaw.exe<span class="rdesc">Нужен для агрессивного профиля. Пусто — найдётся сам.</span></p>
+            </div>
+            <div class="blrow">
+                <input type="text" class="txtinp" id="pathJava" placeholder="...\javaw.exe">
+                <button class="abtn mini" id="pathapply">Применить пути</button>
+            </div>
+            <div class="row">
+                <p>Бэкапы</p>
+            </div>
+            <p class="stat" id="setstat"></p>
+            <div class="bklist" id="bklist"></div>
+            <p class="atext" style="margin-top: 48px">Спасибо, за то что пользуетесь RustMeTweaker</p>
+            <img src="rustmetweaker.png" style="margin-top: 24px" width="512px">
+        </div>
+    </div>
+</main>
+<script src="main.js"></script>
+<script src="curs.js"></script>
+</body>
+</html>
