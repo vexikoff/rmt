@@ -1,80 +1,91 @@
-﻿const anifilt = document.getElementById("af");
-const linfo = document.getElementById("linfo");
-const prs = document.getElementById("prs");
-const prsval = document.getElementById("prsval");
-const bsave = document.getElementById("bsave");
-const bmake = document.getElementById("bmake");
-const bklist = document.getElementById("bklist");
-const autobk = document.getElementById("autobk");
-const optm = document.getElementById("optm");
-const crunkprio = document.getElementById("crunkprio");
-const crunkprioval = document.getElementById("crunkprioval");
-const crunkint = document.getElementById("crunkint");
-const crunkintval = document.getElementById("crunkintval");
-const bladd = document.getElementById("bladd");
-const bladdbtn = document.getElementById("bladdbtn");
-const bllist = document.getElementById("bllist");
-const pathLauncher = document.getElementById("pathLauncher");
-const pathJava = document.getElementById("pathJava");
-const pathapply = document.getElementById("pathapply");
-const profsel = document.getElementById("profsel");
-const profcopy = document.getElementById("profcopy");
-const preCombat = document.getElementById("preCombat");
-const preOpt = document.getElementById("preOpt");
-const preBeauty = document.getElementById("preBeauty");
-const moptbtn = document.getElementById("moptbtn");
-const optback = document.getElementById("optback");
-const crunk = document.getElementById("crunk");
-const kblist = document.getElementById("kblist");
-const funl = document.getElementById("funl");
-const fpsel = document.getElementById("fps");
-const fpsval = document.getElementById("fpsval");
-const twNewRender = document.getElementById("twNewRender");
-const twRenderRegions = document.getElementById("twRenderRegions");
-const twShowTips = document.getElementById("twShowTips");
-const twSnooper = document.getElementById("twSnooper");
-const twFreeze = document.getElementById("twFreeze");
-const twBleed = document.getElementById("twBleed");
-const twCameraShake = document.getElementById("twCameraShake");
-const chColor = document.getElementById("chColor");
-const chOutlineColor = document.getElementById("chOutlineColor");
-const chStyle = document.getElementById("chStyle");
-const rowCameraShake = document.getElementById("rowCameraShake");
-const rowCrosshair = document.getElementById("rowCrosshair");
-const rowSoundExtra = document.getElementById("rowSoundExtra");
-const rowSndEntities = document.getElementById("rowSndEntities");
-const rowSndExplosions = document.getElementById("rowSndExplosions");
-const rowSndWeapons = document.getElementById("rowSndWeapons");
-const profexp = document.getElementById("profexp");
-const profimp = document.getElementById("profimp");
-const slotname = document.getElementById("slotname");
-const slotlist = document.getElementById("slotlist");
-const kbsearch = document.getElementById("kbsearch");
-const kbchanged = document.getElementById("kbchanged");
-const standby = document.getElementById("standby");
-const header = document.getElementById("header");
-const imghh = document.querySelectorAll(".mgm");
-const video = document.getElementById('selfsign');
+﻿const shot = "https://github.com/vexikoff/rmt/releases/download/bgprc/bgprc.png";
+
+const gid = (id) => document.getElementById(id);
+const af = gid("af");
+const linfo = gid("linfo");
+const prs = gid("prs");
+const prsval = gid("prsval");
+const bsave = gid("bsave");
+const bmake = gid("bmake");
+const bklist = gid("bklist");
+const abk = gid("abk");
+const optm = gid("optm");
+const cprio = gid("cprio");
+const cprioval = gid("cprioval");
+const cint = gid("cint");
+const cintval = gid("cintval");
+const bladd = gid("bladd");
+const blbtn = gid("blbtn");
+const blist = gid("blist");
+const dpath = gid("dpath");
+const jpath = gid("jpath");
+const papply = gid("papply");
+const psel = gid("psel");
+const praw = gid("praw");
+const pcopy = gid("pcopy");
+const bcom = gid("bcom");
+const bopt = gid("bopt");
+const bbea = gid("bbea");
+const mopt = gid("mopt");
+const oback = gid("oback");
+const crunk = gid("crunk");
+const kbl = gid("kbl");
+const funl = gid("funl");
+const fps = gid("fps");
+const fpsval = gid("fpsval");
+const nrender = gid("nrender");
+const rreg = gid("rreg");
+const tips = gid("tips");
+const snoop = gid("snoop");
+const freeze = gid("freeze");
+const bleed = gid("bleed");
+const shake = gid("shake");
+const xcolor = gid("xcolor");
+const xoutcolor = gid("xoutcolor");
+const xstyle = gid("xstyle");
+const xnone = gid("xnone");
+const ximg = gid("ximg");
+const xcan = gid("xcan");
+const xop = gid("xop");
+const xgap = gid("xgap");
+const xlen = gid("xlen");
+const xwid = gid("xwid");
+const xdot = gid("xdot");
+const xout = gid("xout");
+const xow = gid("xow");
+const rshake = gid("rshake");
+const rcross = gid("rcross");
+const pexp = gid("pexp");
+const pimp = gid("pimp");
+const sname = gid("sname");
+const slist = gid("slist");
+const kbs = gid("kbs");
+const kbc = gid("kbc");
+const stby = gid("stby");
+const hdr = gid("hdr");
+const mgm = document.querySelectorAll(".mgm");
+const sign = gid("sign");
 const pend = new Map();
 let opt = 0;
 let nid = 1;
 let lock = false;
 let cap = null;
-let transitioning = false;
-let pendingTab = null;
-let blCache = [];
+let busy = false;
+let next = null;
+let cur = null;
+let blcache = [];
 let kbitems = [];
 let kbbase = null;
-let kbquery = "";
-let kbchangedonly = false;
+let kbq = "";
+let kbmod = false;
 const fpsunl = 9999;
-const pageDur = 100;
-const pageShift = 12;
-const maxBlur = 14;
+const dur = 100;
+const shift = 12;
+const maxblur = 14;
 
-imghh.forEach(el => {
-    el.addEventListener("click", e => {
-        header.classList.toggle("hidden");
+mgm.forEach((node) => {
+    node.addEventListener("click", () => {
+        hdr.classList.toggle("hidden");
     });
 });
 
@@ -94,60 +105,60 @@ const tgls = [
 ];
 
 const twb = [
-    { el: twNewRender, k: "newRender" },
-    { el: twRenderRegions, k: "renderRegions" },
-    { el: twShowTips, k: "showTips" },
-    { el: twSnooper, k: "snooper" },
-    { el: twFreeze, k: "freezingOverlay" },
-    { el: twBleed, k: "bleedingOverlay" },
-    { el: twCameraShake, k: "cameraShake" }
+    { node: nrender, k: "newRender" },
+    { node: rreg, k: "renderRegions" },
+    { node: tips, k: "showTips" },
+    { node: snoop, k: "snooper" },
+    { node: freeze, k: "freezingOverlay" },
+    { node: bleed, k: "bleedingOverlay" },
+    { node: shake, k: "cameraShake" }
 ];
 
-const twKeys = {
-    twNewRender: "new_render",
-    twRenderRegions: "render_regions",
-    twShowTips: "show_tips",
-    twSnooper: "snooper",
-    twFreeze: "freezing_overlay",
-    twBleed: "bleeding_overlay",
-    twCameraShake: "camera_shake"
+const twk = {
+    nrender: "new_render",
+    rreg: "render_regions",
+    tips: "show_tips",
+    snoop: "snooper",
+    freeze: "freezing_overlay",
+    bleed: "bleeding_overlay",
+    shake: "camera_shake"
 };
 
-const chslds = [
-    { id: "chOpacity", k: "opacity", fmt: (v) => Number(v).toFixed(2) },
-    { id: "chGap", k: "gap", fmt: (v) => Number(v).toFixed(1) },
-    { id: "chLen", k: "line_length", fmt: (v) => Number(v).toFixed(1) },
-    { id: "chWidth", k: "line_width", fmt: (v) => Number(v).toFixed(1) },
-    { id: "chDot", k: "dot_size", fmt: (v) => Number(v).toFixed(1) },
-    { id: "chOutWidth", k: "outline_width", fmt: (v) => Number(v).toFixed(1) }
+const chs = [
+    { id: "xop", k: "opacity", fmt: (v) => Number(v).toFixed(2) },
+    { id: "xgap", k: "gap", fmt: (v) => Number(v).toFixed(1) },
+    { id: "xlen", k: "line_length", fmt: (v) => Number(v).toFixed(1) },
+    { id: "xwid", k: "line_width", fmt: (v) => Number(v).toFixed(1) },
+    { id: "xdot", k: "dot_size", fmt: (v) => Number(v).toFixed(1) },
+    { id: "xow", k: "outline_width", fmt: (v) => Number(v).toFixed(1) }
 ];
 
-const chtgls = [
-    { id: "chEnabled", k: "enabled", key: "enabled" },
-    { id: "chOutline", k: "outline", key: "outline" },
-    { id: "chDynSpacing", k: "dynamicSpacing", key: "dynamic_spacing" },
-    { id: "chDynVis", k: "dynamicVisibility", key: "dynamic_visibility" }
+const cht = [
+    { id: "xout", k: "outline", key: "outline" },
+    { id: "xdyn", k: "dynamicSpacing", key: "dynamic_spacing" },
+    { id: "xvis", k: "dynamicVisibility", key: "dynamic_visibility" }
 ];
 
-const sndslds = [
-    { id: "sndEntities", k: "entities_volume", row: rowSndEntities, has: "hasEntitiesVolume", val: "entitiesVolume", fmt: (v) => Math.round(Number(v) * 100) + "%" },
-    { id: "sndExplosions", k: "explosions_volume", row: rowSndExplosions, has: "hasExplosionsVolume", val: "explosionsVolume", fmt: (v) => Math.round(Number(v) * 100) + "%" },
-    { id: "sndWeapons", k: "weapons_volume", row: rowSndWeapons, has: "hasWeaponsVolume", val: "weaponsVolume", fmt: (v) => Math.round(Number(v) * 100) + "%" }
-];
-
-const prioNames = ["Обычный", "Выше обычного", "Высокий"];
+const prion = ["Обычный", "Выше обычного", "Высокий"];
 
 const tabs = [
     { t: "tgraf", p: "pgraf" },
-    { t: "tlaunch", p: "plaunch" },
+    { t: "tcross", p: "pcross" },
+    { t: "tlch", p: "plch" },
     { t: "topt", p: "popt" },
-    { t: "tctrl", p: "pctrl" },
-    { t: "tabout", p: "pabout" },
+    { t: "tkey", p: "pkey" },
+    { t: "tabt", p: "pabt" },
     { t: "tset", p: "pset" }
 ];
 
 const pnames = ["Низкие", "Средние", "Высокие"];
 const pkeys = ["low", "medium", "high"];
+
+const profknown = {
+    "prod-a": "Основной",
+    "prod--b": "Запасной",
+    "testing": "Тестовый"
+};
 
 const glfw = {
     KeyA: 65, KeyB: 66, KeyC: 67, KeyD: 68, KeyE: 69, KeyF: 70, KeyG: 71, KeyH: 72,
@@ -200,7 +211,7 @@ const gname = {
     348: "Menu"
 };
 
-const kbnames = {
+const kbn = {
     key_action: "Действие",
     key_admin_menu: "Админ-меню",
     key_arena_weapon: "Аренное оружие",
@@ -245,18 +256,18 @@ const kbnames = {
     key_zoom: "Зум"
 };
 
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
+const obs = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
         if (entry.isIntersecting) {
-            video.currentTime = 0;
-            video.play();
+            sign.currentTime = 0;
+            sign.play();
         } else {
-            video.pause();
+            sign.pause();
         }
     });
 }, { threshold: 0 });
 
-function cubicBezierFactory(x1, y1, x2, y2) {
+function ease(x1, y1, x2, y2) {
     const ax = 1.0 - 3.0 * x2 + 3.0 * x1;
     const bx = 3.0 * x2 - 6.0 * x1;
     const cx = 3.0 * x1;
@@ -264,37 +275,37 @@ function cubicBezierFactory(x1, y1, x2, y2) {
     const by = 3.0 * y2 - 6.0 * y1;
     const cy = 3.0 * y1;
 
-    function calcBezier(a, b, c, t) {
+    function calc(a, b, c, t) {
         return ((a * t + b) * t + c) * t;
     }
 
-    function derivative(a, b, c, t) {
+    function deriv(a, b, c, t) {
         return (3.0 * a * t + 2.0 * b) * t + c;
     }
 
-    function solveCurveX(x, eps) {
+    function solve(x, eps) {
         let t2 = x;
         for (let i = 0; i < 8; i++) {
-            const x2 = calcBezier(ax, bx, cx, t2) - x;
-            if (Math.abs(x2) < eps) {
+            const d = calc(ax, bx, cx, t2) - x;
+            if (Math.abs(d) < eps) {
                 return t2;
             }
-            const d = derivative(ax, bx, cx, t2);
-            if (Math.abs(d) < 1e-6) {
+            const dd = deriv(ax, bx, cx, t2);
+            if (Math.abs(dd) < 1e-6) {
                 break;
             }
-            t2 = t2 - x2 / d;
+            t2 = t2 - d / dd;
         }
 
         let t1 = 0.0;
         t2 = 1.0;
         let t = x;
         while (t1 < t2) {
-            const x2 = calcBezier(ax, bx, cx, t);
-            if (Math.abs(x2 - x) < eps) {
+            const d = calc(ax, bx, cx, t);
+            if (Math.abs(d - x) < eps) {
                 return t;
             }
-            if (x > x2) {
+            if (x > d) {
                 t1 = t;
             } else {
                 t2 = t;
@@ -311,27 +322,27 @@ function cubicBezierFactory(x1, y1, x2, y2) {
         if (x >= 1) {
             return 1;
         }
-        return calcBezier(ay, by, cy, solveCurveX(x, 1e-7));
+        return calc(ay, by, cy, solve(x, 1e-7));
     };
 }
 
-const pageEase = cubicBezierFactory(1 / 3, 2 / 3, 2 / 3, 1);
+const pease = ease(1 / 3, 2 / 3, 2 / 3, 1);
 
-function runPageAnim(el, fromOp, fromTx, toOp, toTx, done) {
+function anim(node, fo, ft, to, tt, done) {
     const start = performance.now();
 
     function frame(now) {
-        let t = (now - start) / pageDur;
+        let t = (now - start) / dur;
         if (t >= 1) {
             t = 1;
         }
-        const e = pageEase(t);
-        const op = fromOp + (toOp - fromOp) * e;
+        const e = pease(t);
+        const op = fo + (to - fo) * e;
         if (opt === 0) {
-            el.style.filter = "blur(" + ((1 - op) * maxBlur) + "px)";
-            el.style.transform = "translateX(" + (fromTx + (toTx - fromTx) * e) + "px)";
+            node.style.filter = "blur(" + ((1 - op) * maxblur) + "px)";
+            node.style.transform = "translateX(" + (ft + (tt - ft) * e) + "px)";
         }
-        el.style.opacity = String(op);
+        node.style.opacity = String(op);
         if (t < 1) {
             requestAnimationFrame(frame);
         } else {
@@ -344,17 +355,17 @@ function runPageAnim(el, fromOp, fromTx, toOp, toTx, done) {
     requestAnimationFrame(frame);
 }
 
-function pageOut(el, done) {
-    runPageAnim(el, 1, 0, 0, pageShift, done);
+function pout(node, done) {
+    anim(node, 1, 0, 0, shift, done);
 }
 
-function pageIn(el, done) {
-    runPageAnim(el, 0, -pageShift, 1, 0, done);
+function pin(node, done) {
+    anim(node, 0, -shift, 1, 0, done);
 }
 
-function getCurrentPanel() {
+function curpan() {
     for (const c of tabs) {
-        const p = document.getElementById(c.p);
+        const p = gid(c.p);
         if (!p.classList.contains("hide")) {
             return p;
         }
@@ -394,36 +405,36 @@ if (wb()) {
     });
 }
 
-function setstat(t) {
-    document.querySelectorAll(".stat").forEach((el) => {
-        el.textContent = t;
+function stat(t) {
+    document.querySelectorAll(".stat").forEach((node) => {
+        node.textContent = t;
     });
 }
 
 function dis(v) {
-    document.querySelectorAll("input, button, select").forEach((el) => {
-        el.disabled = v;
+    document.querySelectorAll("input, button, select").forEach((node) => {
+        node.disabled = v;
     });
 }
 
 function sval(c, v) {
-    document.getElementById(c.id + "val").textContent = c.fmt(v);
+    gid(c.id + "val").textContent = c.fmt(v);
 }
 
 function clamp(v, a, b) {
     return Math.min(b, Math.max(a, v));
 }
 
-function totalram(st) {
+function ram(st) {
     return Math.max(1, Math.floor(st.totalRamGb - 2));
 }
 
-function toHexColor(n) {
+function hex(n) {
     const v = clamp(Math.round(Number(n) || 0), 0, 16777215);
     return "#" + v.toString(16).padStart(6, "0");
 }
 
-function fromHexColor(s) {
+function unhex(s) {
     const v = parseInt(String(s).replace("#", ""), 16);
     if (!Number.isFinite(v)) {
         return 0;
@@ -431,49 +442,112 @@ function fromHexColor(s) {
     return clamp(v, 0, 16777215);
 }
 
-function renderprofiles(items, active) {
-    profsel.textContent = "";
+function plabel(name, idx) {
+    return profknown[name] || "Профиль " + (idx + 1);
+}
+
+function pfill(items, active) {
+    psel.textContent = "";
     const list = Array.isArray(items) ? items : [];
-    list.forEach((it) => {
+    list.forEach((it, idx) => {
         const o = document.createElement("option");
         o.value = it.name;
-        o.textContent = it.name;
-        profsel.appendChild(o);
+        o.textContent = plabel(it.name, idx);
+        psel.appendChild(o);
     });
     if (active) {
-        profsel.value = active;
+        psel.value = active;
     }
+    praw.textContent = active ? "Папка: " + active : "";
+}
+
+if (shot) {
+    ximg.src = shot;
+} else {
+    ximg.style.display = "none";
+}
+ximg.addEventListener("error", () => {
+    ximg.style.display = "none";
+});
+
+function drawx() {
+    const box = xcan.parentElement.getBoundingClientRect();
+    if (box.width < 10 || box.height < 10) {
+        return;
+    }
+    const dpr = window.devicePixelRatio || 1;
+    xcan.width = Math.round(box.width * dpr);
+    xcan.height = Math.round(box.height * dpr);
+    const ctx = xcan.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, box.width, box.height);
+    if (!cur || !cur.found || !cur.profile.hasCrosshair) {
+        return;
+    }
+    const cx = box.width / 2;
+    const cy = box.height / 2;
+    const sc = 4;
+    const op = Number(xop.value);
+    const gap = Number(xgap.value) * sc;
+    const len = Number(xlen.value) * sc;
+    const wid = Math.max(1, Number(xwid.value) * sc);
+    const dot = Number(xdot.value) * sc;
+    const out = xout.checked;
+    const ow = Number(xow.value) * sc;
+    const style = cur.profile.crosshair.style || "Dot";
+    ctx.globalAlpha = op;
+    function bar(x, y, w, h) {
+        if (out) {
+            ctx.fillStyle = xoutcolor.value;
+            ctx.fillRect(x - ow, y - ow, w + ow * 2, h + ow * 2);
+        }
+        ctx.fillStyle = xcolor.value;
+        ctx.fillRect(x, y, w, h);
+    }
+    if (style.toLowerCase() !== "dot") {
+        bar(cx - wid / 2, cy - gap - len, wid, len);
+        bar(cx - wid / 2, cy + gap, wid, len);
+        bar(cx - gap - len, cy - wid / 2, len, wid);
+        bar(cx + gap, cy - wid / 2, len, wid);
+    }
+    bar(cx - dot / 2, cy - dot / 2, dot, dot);
+    ctx.globalAlpha = 1;
 }
 
 function fill(st) {
     lock = true;
+    cur = st;
 
-    autobk.checked = Boolean(st.autoBackup);
-    standby.checked = Boolean(st.standbyClear);
-    crunkprio.value = String(st.crunkPriority);
-    crunkprioval.textContent = prioNames[st.crunkPriority] || String(st.crunkPriority);
-    crunkint.value = String(Math.round(st.crunkIntervalMs / 1000));
-    crunkintval.textContent = Math.round(st.crunkIntervalMs / 1000) + " с";
-    blCache = Array.isArray(st.crunkBlacklist) ? st.crunkBlacklist.slice() : [];
-    renderbl();
-    pathLauncher.value = st.customLauncherDir || "";
-    pathJava.value = st.customJavaPath || "";
-    renderprofiles(st.profiles, st.activeProfile);
+    abk.checked = Boolean(st.autoBackup);
+    stby.checked = Boolean(st.standbyClear);
+    cprio.value = String(st.crunkPriority);
+    cprioval.textContent = prion[st.crunkPriority] || String(st.crunkPriority);
+    cint.value = String(Math.round(st.crunkIntervalMs / 1000));
+    cintval.textContent = Math.round(st.crunkIntervalMs / 1000) + " с";
+    blcache = Array.isArray(st.crunkBlacklist) ? st.crunkBlacklist.slice() : [];
+    drawbl();
+    dpath.value = st.customLauncherDir || "";
+    jpath.value = st.customJavaPath || "";
+    pfill(st.profiles, st.activeProfile);
 
     if (!st.found) {
-        setstat("RustMe не найден. Укажи папку лаунчера в настройках или запусти игру один раз.");
+        stat("RustMe не найден. Укажи папку лаунчера в настройках или запусти игру один раз.");
+        rcross.style.display = "none";
+        xnone.style.display = "";
+        xnone.textContent = "RustMe не найден. Настройки прицела появятся, когда твикер увидит лаунчер.";
         dis(true);
+        drawx();
         lock = false;
         return;
     }
 
     dis(false);
-    linfo.textContent = "Профиль: " + st.account + " · " + st.activeProfile;
+    linfo.textContent = "Профиль: " + st.account + " · " + plabel(st.activeProfile, st.profiles.findIndex((p) => p.name === st.activeProfile));
 
-    anifilt.checked = st.profile.afLevel === 0;
+    af.checked = st.profile.afLevel === 0;
     crunk.checked = Boolean(st.autoCrunk);
     funl.checked = st.profile.fpsLimit === fpsunl || st.profile.fpsLimit === 0;
-    fpsel.disabled = funl.checked;
+    fps.disabled = funl.checked;
 
     const sv = {
         rd: st.profile.renderDistance,
@@ -483,14 +557,14 @@ function fill(st) {
         mem: st.launcher.memoryGb
     };
 
-    document.getElementById("mem").max = String(totalram(st));
+    gid("mem").max = String(ram(st));
 
     slds.forEach((c) => {
         if (c.id === "fps" && funl.checked) {
             return;
         }
-        const el = document.getElementById(c.id);
-        el.value = String(sv[c.id]);
+        const node = gid(c.id);
+        node.value = String(sv[c.id]);
         sval(c, sv[c.id]);
     });
 
@@ -506,61 +580,49 @@ function fill(st) {
     };
 
     tgls.forEach((c) => {
-        document.getElementById(c.id).checked = Boolean(tv[c.id]);
+        gid(c.id).checked = Boolean(tv[c.id]);
     });
 
     twb.forEach((c) => {
-        c.el.checked = Boolean(st.profile[c.k]);
+        c.node.checked = Boolean(st.profile[c.k]);
     });
 
-    rowCameraShake.style.display = st.profile.hasCameraShake ? "" : "none";
-    rowCrosshair.style.display = st.profile.hasCrosshair ? "" : "none";
+    rshake.style.display = st.profile.hasCameraShake ? "" : "none";
+    rcross.style.display = st.profile.hasCrosshair ? "" : "none";
+    xnone.style.display = st.profile.hasCrosshair ? "none" : "";
+    xnone.textContent = "В этом профиле игра не даёт настроек прицела. Выбери профиль, где они есть.";
 
     if (st.profile.hasCrosshair) {
         const ch = st.profile.crosshair;
-        chtgls.forEach((c) => {
-            document.getElementById(c.id).checked = Boolean(ch[c.k]);
+        cht.forEach((c) => {
+            gid(c.id).checked = Boolean(ch[c.k]);
         });
-        chColor.value = toHexColor(ch.color);
-        chOutlineColor.value = toHexColor(ch.outlineColor);
-        chStyle.textContent = ch.style || "—";
+        xcolor.value = hex(ch.color);
+        xoutcolor.value = hex(ch.outlineColor);
+        xstyle.textContent = ch.style || "—";
         const chv = {
-            chOpacity: ch.opacity,
-            chGap: ch.gap,
-            chLen: ch.lineLength,
-            chWidth: ch.lineWidth,
-            chDot: ch.dotSize,
-            chOutWidth: ch.outlineWidth
+            xop: ch.opacity,
+            xgap: ch.gap,
+            xlen: ch.lineLength,
+            xwid: ch.lineWidth,
+            xdot: ch.dotSize,
+            xow: ch.outlineWidth
         };
-        chslds.forEach((c) => {
-            const el = document.getElementById(c.id);
-            el.value = String(chv[c.id]);
+        chs.forEach((c) => {
+            const node = gid(c.id);
+            node.value = String(chv[c.id]);
             sval(c, chv[c.id]);
         });
     }
 
-    let anysound = false;
-    sndslds.forEach((c) => {
-        const has = Boolean(st.profile[c.has]);
-        c.row.style.display = has ? "" : "none";
-        if (!has) {
-            return;
-        }
-        anysound = true;
-        const el = document.getElementById(c.id);
-        el.value = String(st.profile[c.val]);
-        sval(c, st.profile[c.val]);
-    });
-    rowSoundExtra.style.display = anysound ? "" : "none";
-
-    renderkb(st.bindings);
-
+    drawkbitems(st.bindings);
+    drawx();
     lock = false;
 
     if (st.running) {
-        setstat("Лаунчер запущен. Закрой его перед изменением настроек.");
+        stat("Лаунчер запущен. Закрой его перед изменением настроек.");
     } else {
-        setstat("");
+        stat("");
     }
 }
 
@@ -569,7 +631,7 @@ async function pull() {
         const st = await send("getState", {});
         fill(st);
     } catch (err) {
-        setstat(err.message);
+        stat(err.message);
     }
 }
 
@@ -578,7 +640,7 @@ async function push(act, pl) {
         const st = await send(act, pl);
         fill(st);
     } catch (err) {
-        setstat(err.message);
+        stat(err.message);
         await pull();
     }
 }
@@ -587,28 +649,28 @@ async function bpush(act, pl) {
     try {
         await send(act, pl);
         await pull();
-        await loadbackups();
-        setstat("Готово");
+        await loadbk();
+        stat("Готово");
     } catch (err) {
-        setstat(err.message);
+        stat(err.message);
     }
 }
 
-async function slotpush(act, pl) {
+async function spush(act, pl) {
     try {
         const st = await send(act, pl);
         fill(st);
-        await loadslots();
-        setstat("Готово");
+        await loadsl();
+        stat("Готово");
     } catch (err) {
-        setstat(err.message);
+        stat(err.message);
         await pull();
     }
 }
 
-function showtab(id) {
-    if (transitioning) {
-        pendingTab = id;
+function show(id) {
+    if (busy) {
+        next = id;
         return;
     }
 
@@ -617,94 +679,92 @@ function showtab(id) {
         return;
     }
 
-    const toEl = document.getElementById(target.p);
-    const fromEl = getCurrentPanel();
+    const to = gid(target.p);
+    const from = curpan();
 
     tabs.forEach((c) => {
-        document.getElementById(c.t).classList.toggle("active", c.t === id);
+        gid(c.t).classList.toggle("active", c.t === id);
     });
 
-    if (fromEl === toEl) {
+    if (from === to) {
         return;
     }
 
-    transitioning = true;
+    busy = true;
 
-    pageOut(fromEl, () => {
-        fromEl.classList.add("hide");
-        fromEl.style.opacity = "";
-        fromEl.style.transform = "";
-        fromEl.style.filter = "";
+    pout(from, () => {
+        from.classList.add("hide");
+        from.style.opacity = "";
+        from.style.transform = "";
+        from.style.filter = "";
 
         if (opt === 0) {
-            toEl.style.transform = "translateX(" + -pageShift + "px)";
-            toEl.style.filter = "blur(" + maxBlur + "px)";
+            to.style.transform = "translateX(" + -shift + "px)";
+            to.style.filter = "blur(" + maxblur + "px)";
         }
-        toEl.style.opacity = "0";
-        toEl.classList.remove("hide");
-        void toEl.offsetWidth;
+        to.style.opacity = "0";
+        to.classList.remove("hide");
+        void to.offsetWidth;
 
-        pageIn(toEl, () => {
+        pin(to, () => {
             if (opt === 0) {
-                toEl.style.transform = "";
-                toEl.style.filter = "";
+                to.style.transform = "";
+                to.style.filter = "";
             }
-            toEl.style.opacity = "";
-            transitioning = false;
+            to.style.opacity = "";
+            busy = false;
 
             if (id === "tset") {
-                loadbackups();
+                loadbk();
             }
 
             if (id === "topt") {
-                loadslots();
+                loadsl();
             }
 
-            if (pendingTab) {
-                const next = pendingTab;
-                pendingTab = null;
-                showtab(next);
+            if (id === "tcross") {
+                drawx();
+            }
+
+            if (next) {
+                const n = next;
+                next = null;
+                show(n);
             }
         });
     });
 }
 
 function loadopt() {
-    if (localStorage.getItem('opt') === "true") {
+    if (localStorage.getItem("opt") === "true") {
         document.body.classList.add("opt");
         opt = 1;
         optm.checked = true;
     }
 }
 
-function initlabels() {
+function labels() {
     slds.forEach((c) => {
-        const el = document.getElementById(c.id);
-        sval(c, el.value);
+        sval(c, gid(c.id).value);
     });
-    chslds.forEach((c) => {
-        const el = document.getElementById(c.id);
-        sval(c, el.value);
-    });
-    sndslds.forEach((c) => {
-        const el = document.getElementById(c.id);
-        sval(c, el.value);
+    chs.forEach((c) => {
+        sval(c, gid(c.id).value);
     });
     prsval.textContent = pnames[Number(prs.value)];
-    crunkprioval.textContent = prioNames[Number(crunkprio.value)];
-    crunkintval.textContent = Math.round(Number(crunkint.value)) + " с";
+    cprioval.textContent = prion[Number(cprio.value)];
+    cintval.textContent = Math.round(Number(cint.value)) + " с";
 }
 
-async function loadbackups() {
+async function loadbk() {
     try {
         const items = await send("listBackups", {});
-        renderbackups(Array.isArray(items) ? items : []);
+        drawbk(Array.isArray(items) ? items : []);
     } catch (err) {
-        renderbackups([]);
+        drawbk([]);
     }
 }
 
-function renderbackups(items) {
+function drawbk(items) {
     bklist.textContent = "";
     if (!items.length) {
         const e = document.createElement("div");
@@ -720,10 +780,10 @@ function renderbackups(items) {
         info.className = "bkinfo";
         const nm = document.createElement("span");
         nm.className = "bkname";
-        nm.textContent = it.name;
+        nm.textContent = "Копия от " + it.created;
         const dt = document.createElement("span");
         dt.className = "bkdate";
-        dt.textContent = it.created;
+        dt.textContent = it.profile ? "Профиль: " + plabel(it.profile, 0) : it.created;
         info.appendChild(nm);
         info.appendChild(dt);
         const acts = document.createElement("div");
@@ -748,17 +808,17 @@ function renderbackups(items) {
     });
 }
 
-async function loadslots() {
+async function loadsl() {
     try {
         const items = await send("listProfileSlots", {});
-        renderslots(Array.isArray(items) ? items : []);
+        drawsl(Array.isArray(items) ? items : []);
     } catch (err) {
-        renderslots([]);
+        drawsl([]);
     }
 }
 
-function renderslots(items) {
-    slotlist.textContent = "";
+function drawsl(items) {
+    slist.textContent = "";
     for (let n = 1; n <= 3; n++) {
         const it = items.find((s) => s.slot === n);
         const filled = Boolean(it && it.filled);
@@ -780,41 +840,41 @@ function renderslots(items) {
         sb.className = "abtn mini";
         sb.textContent = "Сохранить сюда";
         sb.addEventListener("click", () => {
-            slotpush("saveProfileSlot", { slot: n, name: slotname.value.trim() });
+            spush("saveProfileSlot", { slot: n, name: sname.value.trim() });
         });
         const ab = document.createElement("button");
         ab.className = "abtn mini";
         ab.textContent = "Применить";
         ab.disabled = !filled;
         ab.addEventListener("click", () => {
-            slotpush("applyProfileSlot", { slot: n });
+            spush("applyProfileSlot", { slot: n });
         });
         const db = document.createElement("button");
         db.className = "abtn mini";
         db.textContent = "Удалить";
         db.disabled = !filled;
         db.addEventListener("click", () => {
-            slotpush("deleteProfileSlot", { slot: n });
+            spush("deleteProfileSlot", { slot: n });
         });
         acts.appendChild(sb);
         acts.appendChild(ab);
         acts.appendChild(db);
         row.appendChild(info);
         row.appendChild(acts);
-        slotlist.appendChild(row);
+        slist.appendChild(row);
     }
 }
 
-function renderbl() {
-    bllist.textContent = "";
-    if (!blCache.length) {
+function drawbl() {
+    blist.textContent = "";
+    if (!blcache.length) {
         const e = document.createElement("div");
         e.className = "bkempty";
         e.textContent = "Список пуст";
-        bllist.appendChild(e);
+        blist.appendChild(e);
         return;
     }
-    blCache.forEach((name, idx) => {
+    blcache.forEach((name, idx) => {
         const row = document.createElement("div");
         row.className = "bkitem";
         const info = document.createElement("div");
@@ -829,21 +889,21 @@ function renderbl() {
         db.className = "abtn mini";
         db.textContent = "Удалить";
         db.addEventListener("click", () => {
-            blCache.splice(idx, 1);
-            push("setCrunkBlacklist", { list: blCache });
+            blcache.splice(idx, 1);
+            push("setCrunkBlacklist", { list: blcache });
         });
         acts.appendChild(db);
         row.appendChild(info);
         row.appendChild(acts);
-        bllist.appendChild(row);
+        blist.appendChild(row);
     });
 }
 
 function kblabel(it) {
-    return kbnames[it.key] || it.key.replace("key_", "").replace(/_/g, " ");
+    return kbn[it.key] || it.key.replace("key_", "").replace(/_/g, " ");
 }
 
-function renderkb(items) {
+function drawkbitems(items) {
     kbitems = Array.isArray(items) ? items.slice() : [];
     if (kbbase === null && kbitems.length > 0) {
         kbbase = new Map();
@@ -855,25 +915,25 @@ function renderkb(items) {
 }
 
 function drawkb() {
-    endcap();
-    kblist.textContent = "";
+    capoff();
+    kbl.textContent = "";
     const items = kbitems.filter((it) => {
-        if (kbchangedonly && kbbase !== null && kbbase.get(it.key) === it.code) {
+        if (kbmod && kbbase !== null && kbbase.get(it.key) === it.code) {
             return false;
         }
-        if (kbquery.length === 0) {
+        if (kbq.length === 0) {
             return true;
         }
         const label = kblabel(it).toLowerCase();
         const raw = it.key.toLowerCase();
         const keyname = (gname[it.code] || String(it.code)).toLowerCase();
-        return label.includes(kbquery) || raw.includes(kbquery) || keyname.includes(kbquery);
+        return label.includes(kbq) || raw.includes(kbq) || keyname.includes(kbq);
     });
     if (!items.length) {
         const e = document.createElement("div");
         e.className = "bkempty";
         e.textContent = kbitems.length ? "Ничего не найдено" : "Биндов нет";
-        kblist.appendChild(e);
+        kbl.appendChild(e);
         return;
     }
     items.forEach((it) => {
@@ -888,24 +948,24 @@ function drawkb() {
             if (lock) {
                 return;
             }
-            startcap(b, it.key);
+            capon(b, it.key);
         });
         row.appendChild(p);
         row.appendChild(b);
-        kblist.appendChild(row);
+        kbl.appendChild(row);
     });
 }
 
-function startcap(btn, key) {
+function capon(btn, key) {
     if (cap) {
-        endcap();
+        capoff();
     }
     cap = { key, btn, prev: btn.textContent };
     btn.textContent = "Нажми клавишу";
     btn.classList.add("cap");
 }
 
-function endcap() {
+function capoff() {
     if (!cap) {
         return;
     }
@@ -914,105 +974,101 @@ function endcap() {
     cap = null;
 }
 
-anifilt.addEventListener("change", () => {
+af.addEventListener("change", () => {
     if (lock) {
         return;
     }
-    push("setAf", { disabled: anifilt.checked });
+    push("setAf", { disabled: af.checked });
 });
 
 slds.forEach((c) => {
-    const el = document.getElementById(c.id);
-    el.addEventListener("input", () => {
-        sval(c, el.value);
+    const node = gid(c.id);
+    node.addEventListener("input", () => {
+        sval(c, node.value);
     });
-    el.addEventListener("change", () => {
+    node.addEventListener("change", () => {
         if (lock) {
             return;
         }
-        push(c.sc === "l" ? "setLauncher" : "setProfile", { key: c.k, value: Number(el.value) });
+        push(c.sc === "l" ? "setLauncher" : "setProfile", { key: c.k, value: Number(node.value) });
     });
 });
 
 tgls.forEach((c) => {
-    const el = document.getElementById(c.id);
-    el.addEventListener("change", () => {
+    const node = gid(c.id);
+    node.addEventListener("change", () => {
         if (lock) {
             return;
         }
-        push(c.sc === "l" ? "setLauncher" : "setProfile", { key: c.k, value: el.checked });
+        push(c.sc === "l" ? "setLauncher" : "setProfile", { key: c.k, value: node.checked });
     });
 });
 
-Object.keys(twKeys).forEach((id) => {
-    const el = document.getElementById(id);
-    el.addEventListener("change", () => {
+Object.keys(twk).forEach((id) => {
+    gid(id).addEventListener("change", () => {
         if (lock) {
             return;
         }
-        push("setTweakBool", { key: twKeys[id], value: el.checked });
+        push("setTweakBool", { key: twk[id], value: gid(id).checked });
     });
 });
 
-chslds.forEach((c) => {
-    const el = document.getElementById(c.id);
-    el.addEventListener("input", () => {
-        sval(c, el.value);
+chs.forEach((c) => {
+    const node = gid(c.id);
+    node.addEventListener("input", () => {
+        sval(c, node.value);
+        drawx();
     });
-    el.addEventListener("change", () => {
+    node.addEventListener("change", () => {
         if (lock) {
             return;
         }
-        push("setCrosshair", { key: c.k, value: Number(el.value) });
+        push("setCrosshair", { key: c.k, value: Number(node.value) });
     });
 });
 
-chtgls.forEach((c) => {
-    const el = document.getElementById(c.id);
-    el.addEventListener("change", () => {
+cht.forEach((c) => {
+    const node = gid(c.id);
+    node.addEventListener("change", () => {
+        drawx();
         if (lock) {
             return;
         }
-        push("setCrosshair", { key: c.key, value: el.checked });
+        push("setCrosshair", { key: c.key, value: node.checked });
     });
 });
 
-chColor.addEventListener("change", () => {
+xcolor.addEventListener("input", () => {
+    drawx();
+});
+
+xcolor.addEventListener("change", () => {
     if (lock) {
         return;
     }
-    push("setCrosshair", { key: "color", value: fromHexColor(chColor.value) });
+    push("setCrosshair", { key: "color", value: unhex(xcolor.value) });
 });
 
-chOutlineColor.addEventListener("change", () => {
+xoutcolor.addEventListener("input", () => {
+    drawx();
+});
+
+xoutcolor.addEventListener("change", () => {
     if (lock) {
         return;
     }
-    push("setCrosshair", { key: "outline_color", value: fromHexColor(chOutlineColor.value) });
+    push("setCrosshair", { key: "outline_color", value: unhex(xoutcolor.value) });
 });
 
-sndslds.forEach((c) => {
-    const el = document.getElementById(c.id);
-    el.addEventListener("input", () => {
-        sval(c, el.value);
-    });
-    el.addEventListener("change", () => {
-        if (lock) {
-            return;
-        }
-        push("setSoundVolume", { key: c.k, value: Number(el.value) });
-    });
-});
-
-profsel.addEventListener("change", () => {
+psel.addEventListener("change", () => {
     if (lock) {
         return;
     }
     kbbase = null;
-    push("setGameProfile", { name: profsel.value });
+    push("setGameProfile", { name: psel.value });
 });
 
-profcopy.addEventListener("click", () => {
+pcopy.addEventListener("click", () => {
     if (lock) {
         return;
     }
@@ -1024,12 +1080,12 @@ funl.addEventListener("change", () => {
         return;
     }
     if (funl.checked) {
-        fpsel.disabled = true;
+        fps.disabled = true;
         fpsval.textContent = "Без лимита";
         push("setProfile", { key: "fps_limit", value: fpsunl });
     } else {
-        fpsel.disabled = false;
-        push("setProfile", { key: "fps_limit", value: Number(fpsel.value) });
+        fps.disabled = false;
+        push("setProfile", { key: "fps_limit", value: Number(fps.value) });
     }
 });
 
@@ -1051,18 +1107,18 @@ crunk.addEventListener("change", () => {
     push("setAutoCrunk", { enabled: crunk.checked });
 });
 
-standby.addEventListener("change", () => {
+stby.addEventListener("change", () => {
     if (lock) {
         return;
     }
-    push("setStandbyClear", { enabled: standby.checked });
+    push("setStandbyClear", { enabled: stby.checked });
 });
 
-autobk.addEventListener("change", () => {
+abk.addEventListener("change", () => {
     if (lock) {
         return;
     }
-    push("setAutoBackup", { enabled: autobk.checked });
+    push("setAutoBackup", { enabled: abk.checked });
 });
 
 optm.addEventListener("change", () => {
@@ -1070,7 +1126,7 @@ optm.addEventListener("change", () => {
         return;
     }
 
-    localStorage.setItem('opt', optm.checked.toString());
+    localStorage.setItem("opt", optm.checked.toString());
 
     if (optm.checked === true) {
         document.body.classList.add("opt");
@@ -1082,76 +1138,76 @@ optm.addEventListener("change", () => {
     }
 });
 
-crunkprio.addEventListener("input", () => {
-    crunkprioval.textContent = prioNames[Number(crunkprio.value)];
+cprio.addEventListener("input", () => {
+    cprioval.textContent = prion[Number(cprio.value)];
 });
 
-crunkprio.addEventListener("change", () => {
+cprio.addEventListener("change", () => {
     if (lock) {
         return;
     }
-    push("setCrunkPriority", { priority: Number(crunkprio.value) });
+    push("setCrunkPriority", { priority: Number(cprio.value) });
 });
 
-crunkint.addEventListener("input", () => {
-    crunkintval.textContent = Math.round(Number(crunkint.value)) + " с";
+cint.addEventListener("input", () => {
+    cintval.textContent = Math.round(Number(cint.value)) + " с";
 });
 
-crunkint.addEventListener("change", () => {
+cint.addEventListener("change", () => {
     if (lock) {
         return;
     }
-    push("setCrunkInterval", { ms: Math.round(Number(crunkint.value)) * 1000 });
+    push("setCrunkInterval", { ms: Math.round(Number(cint.value)) * 1000 });
 });
 
-bladdbtn.addEventListener("click", () => {
+blbtn.addEventListener("click", () => {
     const name = bladd.value.trim();
     if (name.length === 0) {
         return;
     }
-    if (blCache.some((n) => n.toLowerCase() === name.toLowerCase())) {
+    if (blcache.some((n) => n.toLowerCase() === name.toLowerCase())) {
         bladd.value = "";
         return;
     }
-    blCache.push(name);
+    blcache.push(name);
     bladd.value = "";
-    push("setCrunkBlacklist", { list: blCache });
+    push("setCrunkBlacklist", { list: blcache });
 });
 
-pathapply.addEventListener("click", () => {
-    push("setCustomPaths", { launcherDir: pathLauncher.value.trim(), javaPath: pathJava.value.trim() });
+papply.addEventListener("click", () => {
+    push("setCustomPaths", { launcherDir: dpath.value.trim(), javaPath: jpath.value.trim() });
 });
 
-kbsearch.addEventListener("input", () => {
-    kbquery = kbsearch.value.trim().toLowerCase();
+kbs.addEventListener("input", () => {
+    kbq = kbs.value.trim().toLowerCase();
     drawkb();
 });
 
-kbchanged.addEventListener("click", () => {
-    kbchangedonly = !kbchangedonly;
-    kbchanged.textContent = kbchangedonly ? "Все бинды" : "Изменённые";
+kbc.addEventListener("click", () => {
+    kbmod = !kbmod;
+    kbc.textContent = kbmod ? "Все бинды" : "Изменённые";
     drawkb();
 });
 
-profexp.addEventListener("click", async () => {
+pexp.addEventListener("click", async () => {
     if (lock) {
         return;
     }
     try {
-        const name = slotname.value.trim() || "rustme-profile";
+        const name = sname.value.trim() || "rustme-profile";
         const pick = await send("pickExportPath", { name });
         if (!pick.path) {
             return;
         }
         const st = await send("exportProfile", { path: pick.path, name });
         fill(st);
-        setstat("Профиль сохранён: " + pick.path);
+        stat("Профиль сохранён: " + pick.path);
     } catch (err) {
-        setstat(err.message);
+        stat(err.message);
     }
 });
 
-profimp.addEventListener("click", async () => {
+pimp.addEventListener("click", async () => {
     if (lock) {
         return;
     }
@@ -1162,42 +1218,42 @@ profimp.addEventListener("click", async () => {
         }
         const st = await send("importProfile", { path: pick.path });
         fill(st);
-        setstat("Профиль импортирован: " + pick.path);
+        stat("Профиль импортирован: " + pick.path);
     } catch (err) {
-        setstat(err.message);
+        stat(err.message);
         await pull();
     }
 });
 
-preCombat.addEventListener("click", () => {
+bcom.addEventListener("click", () => {
     if (lock) {
         return;
     }
     push("applyGeneralPreset", { preset: "combat" });
 });
 
-preOpt.addEventListener("click", () => {
+bopt.addEventListener("click", () => {
     if (lock) {
         return;
     }
     push("applyGeneralPreset", { preset: "optimize" });
 });
 
-preBeauty.addEventListener("click", () => {
+bbea.addEventListener("click", () => {
     if (lock) {
         return;
     }
     push("applyGeneralPreset", { preset: "beauty" });
 });
 
-moptbtn.addEventListener("click", () => {
+mopt.addEventListener("click", () => {
     if (lock) {
         return;
     }
     push("megaoptimize", {});
 });
 
-optback.addEventListener("click", () => {
+oback.addEventListener("click", () => {
     if (lock) {
         return;
     }
@@ -1213,8 +1269,8 @@ bmake.addEventListener("click", () => {
 });
 
 tabs.forEach((c) => {
-    document.getElementById(c.t).addEventListener("click", () => {
-        showtab(c.t);
+    gid(c.t).addEventListener("click", () => {
+        show(c.t);
     });
 });
 
@@ -1227,7 +1283,7 @@ window.addEventListener("keydown", (e) => {
         return;
     }
     if (e.code === "Escape") {
-        endcap();
+        capoff();
         return;
     }
     const code = glfw[e.code];
@@ -1235,7 +1291,7 @@ window.addEventListener("keydown", (e) => {
         return;
     }
     const key = cap.key;
-    endcap();
+    capoff();
     push("setKeybind", { key, value: code });
 });
 
@@ -1250,13 +1306,15 @@ window.addEventListener("mousedown", (e) => {
         return;
     }
     const key = cap.key;
-    endcap();
+    capoff();
     push("setKeybind", { key, value: code });
 });
 
-observer.observe(video);
-initlabels();
-loadbackups();
-loadslots();
+window.addEventListener("resize", drawx);
+
+obs.observe(sign);
+labels();
+loadbk();
+loadsl();
 loadopt();
 pull();

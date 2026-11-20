@@ -666,4 +666,127 @@ body.opt main .rightpan:hover {
   backdrop-filter: blur(0px);
 }
 
+input[type=color] {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: rgba(0, 0, 0, 0.31);
+  border: none;
+  border-radius: 25px;
+  box-sizing: border-box;
+  cursor: default;
+  height: 28px;
+  padding: 0;
+  width: 64px;
+  transition: 1s cubic-bezier(0, 0.25, 0, 1) background-color;
+}
+input[type=color]::-webkit-color-swatch-wrapper {
+  padding: 3px;
+}
+input[type=color]::-webkit-color-swatch {
+  border: none;
+  border-radius: 25px;
+}
+input[type=color]:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+input[type=color]:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.row > input[type=color] {
+  margin-left: auto;
+}
+
+.sech {
+  margin-top: 16px;
+}
+
+.xprev {
+  background-color: rgba(0, 0, 0, 0.31);
+  border-radius: 8px;
+  height: 320px;
+  min-height: 320px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+.xprev img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+.xprev canvas {
+  height: 100%;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+}
+
+.xempty {
+  align-items: center;
+  color: rgba(255, 255, 255, 0.35);
+  display: flex;
+  font-size: 13px;
+  inset: 0;
+  justify-content: center;
+  position: absolute;
+  width: 100%;
+}
+
+.plist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pitem {
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  display: flex;
+  gap: 12px;
+  padding: 10px 14px;
+  transition: 1s cubic-bezier(0, 0.25, 0, 1) background-color;
+}
+.pitem:hover {
+  background-color: rgba(0, 0, 0, 0.45);
+}
+.pitem.active {
+  background-color: rgba(255, 51, 0, 0.14);
+}
+.pitem.active .pname {
+  color: #FF3300;
+}
+.pitem.active:hover {
+  background-color: rgba(255, 51, 0, 0.2);
+}
+
+.pinfo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pname {
+  color: #ffffff;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: 1s cubic-bezier(0, 0.25, 0, 1) color;
+}
+
+.praw {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /*# sourceMappingURL=style.css.map */

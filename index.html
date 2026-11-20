@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
@@ -8,7 +8,7 @@
 <div class="bg">
     <video src="https://github.com/vexikoff/rmt/releases/download/background/background.mp4" autoplay loop muted></video>
 </div>
-<header id="header" class="hidden">
+<header id="hdr" class="hidden">
     <img src="rustmetweaker.png" class="nnm mgm" height="16px">
     <img src="Square44x44Logo.targetsize-24_altform-unplated.png" class="hhm mgm" width="18px" height="18px" alt="">
     <p class="hhm mgm">RustMeTweaker</p>
@@ -20,7 +20,11 @@
             <span class="fonticon">&#xE794;</span>
             <p>Графика</p>
         </div>
-        <div class="chk" id="tlaunch">
+        <div class="chk" id="tcross">
+            <span class="fonticon">&#xE7B3;</span>
+            <p>Прицел</p>
+        </div>
+        <div class="chk" id="tlch">
             <span class="fonticon">&#xF71C;</span>
             <p>Лаунчер</p>
         </div>
@@ -28,11 +32,11 @@
             <span class="fonticon ccs">&#xEC4A;</span>
             <p>Оптимизация</p>
         </div>
-        <div class="chk" id="tctrl">
+        <div class="chk" id="tkey">
             <span class="fonticon">&#xE92E;</span>
             <p>Управление</p>
         </div>
-        <div class="chk bottom" id="tabout">
+        <div class="chk bottom" id="tabt">
             <span class="fonticon">&#xE946;</span>
             <p>О программе</p>
         </div>
@@ -44,7 +48,7 @@
     <div class="rightpan">
         <div class="one pan" id="pgraf">
             <h1>Графика</h1>
-            <h2>Настройки графики игры</h2>
+            <h2>Картинка игры</h2>
             <div class="row">
                 <p>Выключить анизотропную фильтрацию<span class="rdesc">Сглаживание краёв текстур. Выключи — будет больше FPS.</span></p>
                 <div class="checkbox-wrapper-25">
@@ -104,122 +108,101 @@
                     <input type="checkbox" id="sfps">
                 </div>
             </div>
-            <div id="rowCameraShake" style="display: flex; flex-direction: column; gap: 8px;">
-                <h3 class="asub">Камера — только testing-profile-4</h3>
+            <div id="rshake" style="display: flex; flex-direction: column; gap: 8px;">
+                <h3 class="asub">Камера</h3>
                 <div class="row">
                     <p>Тряска камеры<span class="rdesc">Покачивание камеры при беге и уроне. Выключи — картинка стабильнее.</span></p>
                     <div class="checkbox-wrapper-25">
-                        <input type="checkbox" id="twCameraShake">
+                        <input type="checkbox" id="shake">
                     </div>
                 </div>
             </div>
-            <div id="rowCrosshair" style="display: flex; flex-direction: column; gap: 8px;">
-                <h3 class="asub">Прицел — только testing-profile-4</h3>
-                <div class="row">
-                    <p>Свой прицел<span class="rdesc">Заменяет стандартный прицел на настраиваемый.</span></p>
-                    <div class="checkbox-wrapper-25">
-                        <input type="checkbox" id="chEnabled">
-                    </div>
+        </div>
+        <div class="pan hide" id="pcross">
+            <h1>Прицел</h1>
+            <h2>Как выглядит прицел в игре</h2>
+            <p class="atext" id="xnone" style="display: none;"></p>
+            <div id="rcross" style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="position: relative; width: 100%; height: 320px; min-height: 320px; overflow: hidden; border-radius: 8px; background-color: rgba(0, 0, 0, 0.31);">
+                    <img id="ximg" alt="" style="display: block; width: 100%; height: 100%; object-fit: cover;">
+                    <canvas id="xcan" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none;"></canvas>
                 </div>
+                <p class="rdesc">Предпросмотр на скриншоте игры. Ползунки ниже меняют прицел сразу.</p>
                 <div class="row">
                     <p>Стиль прицела<span class="rdesc">Меняется в настройках игры.</span></p>
-                    <span class="sldval" id="chStyle"></span>
+                    <span class="sldval" id="xstyle"></span>
                 </div>
                 <div class="row">
                     <p>Цвет прицела<span class="rdesc">Основной цвет прицела.</span></p>
-                    <input type="color" id="chColor">
+                    <input type="color" id="xcolor">
                 </div>
                 <div class="row">
                     <p>Прозрачность прицела<span class="rdesc">0 — невидимый, 1 — яркий.</span></p>
                     <div class="sldwrap">
-                        <input type="range" id="chOpacity" min="0" max="1" step="0.05">
-                        <span class="sldval" id="chOpacityval"></span>
+                        <input type="range" id="xop" min="0" max="1" step="0.05">
+                        <span class="sldval" id="xopval"></span>
                     </div>
                 </div>
                 <div class="row">
                     <p>Отступ от центра<span class="rdesc">Насколько линии прицела расходятся от центра.</span></p>
                     <div class="sldwrap">
-                        <input type="range" id="chGap" min="0" max="20" step="0.5">
-                        <span class="sldval" id="chGapval"></span>
+                        <input type="range" id="xgap" min="0" max="20" step="0.5">
+                        <span class="sldval" id="xgapval"></span>
                     </div>
                 </div>
                 <div class="row">
                     <p>Длина линий<span class="rdesc">Длина штрихов прицела.</span></p>
                     <div class="sldwrap">
-                        <input type="range" id="chLen" min="0" max="20" step="0.5">
-                        <span class="sldval" id="chLenval"></span>
+                        <input type="range" id="xlen" min="0" max="20" step="0.5">
+                        <span class="sldval" id="xlenval"></span>
                     </div>
                 </div>
                 <div class="row">
                     <p>Толщина линий<span class="rdesc">Толщина штрихов прицела.</span></p>
                     <div class="sldwrap">
-                        <input type="range" id="chWidth" min="0.1" max="5" step="0.1">
-                        <span class="sldval" id="chWidthval"></span>
+                        <input type="range" id="xwid" min="0.1" max="5" step="0.1">
+                        <span class="sldval" id="xwidval"></span>
                     </div>
                 </div>
                 <div class="row">
-                    <p>Размер точки<span class="rdesc">Работает, когда прицел — точка.</span></p>
+                    <p>Размер точки<span class="rdesc">Размер точки прицела.</span></p>
                     <div class="sldwrap">
-                        <input type="range" id="chDot" min="0.5" max="10" step="0.5">
-                        <span class="sldval" id="chDotval"></span>
+                        <input type="range" id="xdot" min="0.5" max="10" step="0.5">
+                        <span class="sldval" id="xdotval"></span>
                     </div>
                 </div>
                 <div class="row">
                     <p>Обводка прицела<span class="rdesc">Контур вокруг прицела, чтобы его было видно на светлом фоне.</span></p>
                     <div class="checkbox-wrapper-25">
-                        <input type="checkbox" id="chOutline">
+                        <input type="checkbox" id="xout">
                     </div>
                 </div>
                 <div class="row">
                     <p>Цвет обводки<span class="rdesc">Работает при включённой обводке.</span></p>
-                    <input type="color" id="chOutlineColor">
+                    <input type="color" id="xoutcolor">
                 </div>
                 <div class="row">
                     <p>Толщина обводки<span class="rdesc">Работает при включённой обводке.</span></p>
                     <div class="sldwrap">
-                        <input type="range" id="chOutWidth" min="0.1" max="5" step="0.1">
-                        <span class="sldval" id="chOutWidthval"></span>
+                        <input type="range" id="xow" min="0.1" max="5" step="0.1">
+                        <span class="sldval" id="xowval"></span>
                     </div>
                 </div>
                 <div class="row">
                     <p>Динамический отступ<span class="rdesc">Прицел расходится при беге и стрельбе.</span></p>
                     <div class="checkbox-wrapper-25">
-                        <input type="checkbox" id="chDynSpacing">
+                        <input type="checkbox" id="xdyn">
                     </div>
                 </div>
                 <div class="row">
                     <p>Динамическая видимость<span class="rdesc">Прицел прячется там, где его скрывает сама игра.</span></p>
                     <div class="checkbox-wrapper-25">
-                        <input type="checkbox" id="chDynVis">
-                    </div>
-                </div>
-            </div>
-            <div id="rowSoundExtra" style="display: flex; flex-direction: column; gap: 8px;">
-                <h3 class="asub">Звук — только testing-profile-4</h3>
-                <div class="row" id="rowSndEntities">
-                    <p>Громкость сущностей<span class="rdesc">Звуки мобов и предметов вокруг.</span></p>
-                    <div class="sldwrap">
-                        <input type="range" id="sndEntities" min="0" max="1" step="0.05">
-                        <span class="sldval" id="sndEntitiesval"></span>
-                    </div>
-                </div>
-                <div class="row" id="rowSndExplosions">
-                    <p>Громкость взрывов<span class="rdesc">Взрывы и детонации.</span></p>
-                    <div class="sldwrap">
-                        <input type="range" id="sndExplosions" min="0" max="1" step="0.05">
-                        <span class="sldval" id="sndExplosionsval"></span>
-                    </div>
-                </div>
-                <div class="row" id="rowSndWeapons">
-                    <p>Громкость оружия<span class="rdesc">Выстрелы и перезарядка.</span></p>
-                    <div class="sldwrap">
-                        <input type="range" id="sndWeapons" min="0" max="1" step="0.05">
-                        <span class="sldval" id="sndWeaponsval"></span>
+                        <input type="checkbox" id="xvis">
                     </div>
                 </div>
             </div>
         </div>
-        <div class="two pan hide" id="plaunch">
+        <div class="two pan hide" id="plch">
             <h1>Лаунчер</h1>
             <h2 id="linfo">Настройки лаунчера RustMe</h2>
             <div class="row">
@@ -248,67 +231,67 @@
             <div class="row">
                 <p>Встроенные пресеты<span class="rdesc">Готовые настройки под стиль игры.</span></p>
                 <div class="btnrow">
-                    <button class="abtn" id="preCombat">Комбат</button>
-                    <button class="abtn" id="preOpt">Оптимизация</button>
-                    <button class="abtn" id="preBeauty">Красота</button>
+                    <button class="abtn" id="bcom">Комбат</button>
+                    <button class="abtn" id="bopt">Оптимизация</button>
+                    <button class="abtn" id="bbea">Красота</button>
                 </div>
             </div>
             <div class="row">
                 <p>Личные профили<span class="rdesc">Три ячейки под свои наборы настроек. Название ниже попадёт и в файл при экспорте.</span></p>
             </div>
             <div class="blrow">
-                <input type="text" class="txtinp" id="slotname" placeholder="название профиля, например Фарм/Ночь">
+                <input type="text" class="txtinp" id="sname" placeholder="название профиля, например Фарм/Ночь">
             </div>
-            <div class="bklist" id="slotlist" style="min-height: 152px;"></div>
+            <div class="bklist" id="slist" style="min-height: 152px;"></div>
             <div class="row">
                 <p>Обмен профилями<span class="rdesc">Сохранить свои настройки в файл и передать другу. Или применить чужой файл.</span></p>
                 <div class="btnrow">
-                    <button class="abtn" id="profexp">Экспортировать профиль</button>
-                    <button class="abtn" id="profimp">Импортировать профиль</button>
+                    <button class="abtn" id="pexp">Экспортировать профиль</button>
+                    <button class="abtn" id="pimp">Импортировать профиль</button>
                 </div>
             </div>
             <div class="row">
                 <p>Агрессивный профиль<span class="rdesc">Максимум FPS. Заметно упрощает картинку и меняет пару настроек Windows.</span></p>
-                <button class="abtn" id="moptbtn">СуперОптимизировать</button>
+                <button class="abtn" id="mopt">СуперОптимизировать</button>
             </div>
             <div class="row">
                 <p>Вернуть настройки из бэкапа<span class="rdesc">Восстанавливает настройки из последней сохранённой копии.</span></p>
-                <button class="abtn" id="optback">Откатить</button>
+                <button class="abtn" id="oback">Откатить</button>
             </div>
             <div class="row">
                 <p>Новый рендер<span class="rdesc">Другой способ отрисовки. На слабых ПК часто быстрее.</span></p>
                 <div class="checkbox-wrapper-25">
-                    <input type="checkbox" id="twNewRender">
+                    <input type="checkbox" id="nrender">
                 </div>
             </div>
             <div class="row">
                 <p>Регионы рендера<span class="rdesc">Отрисовывать только то, что видно на экране.</span></p>
                 <div class="checkbox-wrapper-25">
-                    <input type="checkbox" id="twRenderRegions">
+                    <input type="checkbox" id="rreg">
                 </div>
             </div>
             <div class="row">
                 <p>Подсказки интерфейса<span class="rdesc">Всплывающие советы в игре. Выключи — меньше шума на экране.</span></p>
                 <div class="checkbox-wrapper-25">
-                    <input type="checkbox" id="twShowTips">
+                    <input type="checkbox" id="tips">
                 </div>
             </div>
             <div class="row">
                 <p>Snooper<span class="rdesc">Отправка статистики разработчикам. Выключи — приватнее.</span></p>
                 <div class="checkbox-wrapper-25">
-                    <input type="checkbox" id="twSnooper">
+                    <input type="checkbox" id="snoop">
                 </div>
             </div>
             <div class="row">
                 <p>Оверлей замерзания<span class="rdesc">Индикатор холода на экране.</span></p>
                 <div class="checkbox-wrapper-25">
-                    <input type="checkbox" id="twFreeze">
+                    <input type="checkbox" id="freeze">
                 </div>
             </div>
             <div class="row">
                 <p>Оверлей крови<span class="rdesc">Красная рамка при уроне.</span></p>
                 <div class="checkbox-wrapper-25">
-                    <input type="checkbox" id="twBleed">
+                    <input type="checkbox" id="bleed">
                 </div>
             </div>
             <div class="row">
@@ -319,17 +302,17 @@
             </div>
             <p class="stat"></p>
         </div>
-        <div class="pan hide" id="pctrl">
+        <div class="pan hide" id="pkey">
             <h1>Управление</h1>
             <h2>Нажми на кнопку бинда и назначь клавишу. Esc отменяет захват, кнопки мыши тоже назначаются.</h2>
             <div class="blrow">
-                <input type="text" class="txtinp" id="kbsearch" placeholder="поиск по действию или клавише">
-                <button class="abtn mini" id="kbchanged" title="Показать бинды, отличающиеся от значений на момент открытия твикера">Изменённые</button>
+                <input type="text" class="txtinp" id="kbs" placeholder="поиск по действию или клавише">
+                <button class="abtn mini" id="kbc" title="Показать бинды, отличающиеся от значений на момент открытия твикера">Изменённые</button>
             </div>
-            <div class="kblist" id="kblist"></div>
+            <div class="kblist" id="kbl"></div>
             <p class="stat"></p>
         </div>
-        <div class="pan hide" id="pabout">
+        <div class="pan hide" id="pabt">
             <div class="about-content">
                 <h1>О программе</h1>
                 <h2>RustMeTweaker — твикер настроек RustMe</h2>
@@ -387,7 +370,7 @@
                     All rights reserved <br>
                     vexikoff 2026 <br>
                 </p>
-                <video src="selfsignwhite.webm" autoplay muted style="width: 384px; margin-top: 24px"  id="selfsign"></video>
+                <video src="selfsignwhite.webm" autoplay muted style="width: 384px; margin-top: 24px" id="sign"></video>
                 <img src="rustmetweaker.png" width="512px">
             </div>
         </div>
@@ -395,12 +378,12 @@
             <h1>Настройки</h1>
             <h2>Профиль, сохранение, бэкапы, AutoCrunk и пути</h2>
             <div class="row">
-                <p>Профиль игры<span class="rdesc">Какой набор настроек ты сейчас меняешь.</span></p>
-                <select class="txtinp" id="profsel" style="max-width: 142px; margin-left: auto;"></select>
+                <p>Профиль игры<span class="rdesc">Какой набор настроек ты сейчас меняешь.</span><span class="rdesc" id="praw"></span></p>
+                <select class="txtinp" id="psel" style="max-width: 142px; margin-left: auto;"></select>
             </div>
             <div class="row">
                 <p>Перенести в остальные профили<span class="rdesc">Скопировать твои настройки во все другие профили. Личные данные каждого профиля останутся на месте.</span></p>
-                <button class="abtn" id="profcopy" style="min-width: 256px;">Перенести во все</button>
+                <button class="abtn" id="pcopy" style="min-width: 256px;">Перенести во все</button>
             </div>
             <div class="row">
                 <p>Текущие настройки<span class="rdesc">Записать изменения в файлы игры.</span></p>
@@ -413,7 +396,7 @@
             <div class="row">
                 <p>Автобэкап перед изменением<span class="rdesc">Делать копию настроек перед каждым изменением.</span></p>
                 <div class="checkbox-wrapper-25">
-                    <input type="checkbox" id="autobk">
+                    <input type="checkbox" id="abk">
                 </div>
             </div>
             <div class="row">
@@ -425,21 +408,21 @@
             <div class="row">
                 <p>Приоритет игры в AutoCrunk<span class="rdesc">Насколько игра важнее остальных программ.</span></p>
                 <div class="sldwrap">
-                    <input type="range" id="crunkprio" min="0" max="2" step="1" value="2">
-                    <span class="sldval" id="crunkprioval"></span>
+                    <input type="range" id="cprio" min="0" max="2" step="1" value="2">
+                    <span class="sldval" id="cprioval"></span>
                 </div>
             </div>
             <div class="row">
                 <p>Интервал обновления приоритетов<span class="rdesc">Как часто переставлять приоритеты новым программам.</span></p>
                 <div class="sldwrap">
-                    <input type="range" id="crunkint" min="2" max="20" step="1" value="5">
-                    <span class="sldval" id="crunkintval"></span>
+                    <input type="range" id="cint" min="2" max="20" step="1" value="5">
+                    <span class="sldval" id="cintval"></span>
                 </div>
             </div>
             <div class="row">
                 <p>Очищать standby-кэш перед запуском<span class="rdesc">Освобождать память перед стартом игры. Меньше фризов на 8–16 ГБ. Нужен запуск твикера от администратора.</span></p>
                 <div class="checkbox-wrapper-25">
-                    <input type="checkbox" id="standby">
+                    <input type="checkbox" id="stby">
                 </div>
             </div>
             <div class="row">
@@ -447,26 +430,26 @@
             </div>
             <div class="blrow">
                 <input type="text" class="txtinp" id="bladd" placeholder="имя процесса, например chrome">
-                <button class="abtn mini" id="bladdbtn">Добавить</button>
+                <button class="abtn mini" id="blbtn">Добавить</button>
             </div>
-            <div class="bllist" id="bllist"></div>
+            <div class="bllist" id="blist"></div>
             <div class="row">
                 <p>Папка лаунчера<span class="rdesc">Оставь пустым — найдётся сама.</span></p>
             </div>
             <div class="blrow">
-                <input type="text" class="txtinp" id="pathLauncher" placeholder="C:\Users\...\rustme-launcher">
+                <input type="text" class="txtinp" id="dpath" placeholder="C:\Users\...\rustme-launcher">
             </div>
             <div class="row">
                 <p>Путь к javaw.exe<span class="rdesc">Нужен для агрессивного профиля. Пусто — найдётся сам.</span></p>
             </div>
             <div class="blrow">
-                <input type="text" class="txtinp" id="pathJava" placeholder="...\javaw.exe">
-                <button class="abtn mini" id="pathapply">Применить пути</button>
+                <input type="text" class="txtinp" id="jpath" placeholder="...\javaw.exe">
+                <button class="abtn mini" id="papply">Применить пути</button>
             </div>
             <div class="row">
                 <p>Бэкапы</p>
             </div>
-            <p class="stat" id="setstat"></p>
+            <p class="stat" id="sstat"></p>
             <div class="bklist" id="bklist"></div>
             <p class="atext" style="margin-top: 48px">Спасибо, за то что пользуетесь RustMeTweaker</p>
             <img src="rustmetweaker.png" style="margin-top: 24px" width="512px">

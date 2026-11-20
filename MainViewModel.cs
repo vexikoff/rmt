@@ -49,6 +49,14 @@ public class MainViewModel
         "steam", "steamwebhelper", "discord", "telegram", "spotify"
     };
 
+    private static readonly string[] SoundKeys =
+    {
+        "master_volume", "music_volume", "ambient_volume", "blocks_volume",
+        "hostile_volume", "neutral_volume", "players_volume", "records_volume",
+        "weather_volume", "interface_volume", "entities_volume",
+        "explosions_volume", "weapons_volume"
+    };
+
     private static readonly string[] CopyGraphicKeys =
     {
         "af_level", "aa_level", "render_distance", "mipmap_levels", "minimap_quality",
@@ -65,11 +73,6 @@ public class MainViewModel
     private static readonly string[] CopyScreenKeys =
     {
         "fps_limit", "v_sync"
-    };
-
-    private static readonly string[] CopySoundKeys =
-    {
-        "entities_volume", "explosions_volume", "weapons_volume"
     };
 
     private static readonly string[] CopyCrosshairKeys =
@@ -221,49 +224,45 @@ public class MainViewModel
 
     private void LoadTweakerConfig()
     {
+        if (!File.Exists(TweakerPath))
+        {
+            return;
+        }
+        JsonObject? node = null;
         try
         {
-            if (!File.Exists(TweakerPath))
+            node = JsonNode.Parse(File.ReadAllText(TweakerPath)) as JsonObject;
+        }
+        catch
+        {
+            node = null;
+        }
+        if (node == null)
+        {
+            return;
+        }
+        _autoBackup = ReadJsonBool(node, "autoBackup", false);
+        _standbyClear = ReadJsonBool(node, "standbyClear", false);
+        _crunkPriority = Math.Clamp(ReadJsonInt(node, "crunkPriority", 2), 0, 2);
+        _crunkIntervalMs = Math.Clamp(ReadJsonInt(node, "crunkIntervalMs", 5000), 2000, 20000);
+        _customLauncherDir = ReadJsonString(node, "customLauncherDir", "");
+        _customJavaPath = ReadJsonString(node, "customJavaPath", "");
+        _profileName = ReadJsonString(node, "activeProfile", "");
+        if (node["crunkBlacklist"] is JsonArray arr)
+        {
+            List<string> list = new();
+            foreach (JsonNode? item in arr)
             {
-                return;
-            }
-            JsonObject node = JsonNode.Parse(File.ReadAllText(TweakerPath)) as JsonObject ?? new JsonObject();
-            _autoBackup = node["autoBackup"]?.GetValue<bool>() ?? false;
-            _standbyClear = node["standbyClear"]?.GetValue<bool>() ?? false;
-            _crunkPriority = node["crunkPriority"]?.GetValue<int>() ?? 2;
-            _crunkIntervalMs = node["crunkIntervalMs"]?.GetValue<int>() ?? 5000;
-            _customLauncherDir = node["customLauncherDir"]?.GetValue<string>() ?? "";
-            _customJavaPath = node["customJavaPath"]?.GetValue<string>() ?? "";
-            _profileName = node["activeProfile"]?.GetValue<string>() ?? "";
-            if (node["crunkBlacklist"] is JsonArray arr)
-            {
-                List<string> list = new();
-                foreach (JsonNode? item in arr)
+                if (item is JsonValue jv && jv.TryGetValue<string>(out string? raw) && raw != null)
                 {
-                    string? s = item?.GetValue<string>();
-                    if (s == null)
-                    {
-                        continue;
-                    }
-                    string norm = NormalizeProcessName(s);
+                    string norm = NormalizeProcessName(raw);
                     if (norm.Length > 0)
                     {
                         list.Add(norm);
                     }
                 }
-                _crunkBlacklist = list;
             }
-        }
-        catch
-        {
-            _autoBackup = false;
-            _standbyClear = false;
-            _crunkPriority = 2;
-            _crunkIntervalMs = 5000;
-            _crunkBlacklist = new List<string>(DefaultCrunkBlacklist);
-            _customLauncherDir = "";
-            _customJavaPath = "";
-            _profileName = "";
+            _crunkBlacklist = list;
         }
     }
 
@@ -295,8 +294,8 @@ public class MainViewModel
         try
         {
             JsonObject root = JsonNode.Parse(request) as JsonObject ?? throw new InvalidOperationException("bad request");
-            id = root["id"]?.GetValue<int>() ?? 0;
-            string action = root["action"]?.GetValue<string>() ?? "";
+            id = ReadJsonInt(root, "id", 0);
+            string action = ReadJsonString(root, "action", "");
             JsonObject payload = root["payload"] as JsonObject ?? new JsonObject();
 
             object? data = action switch
@@ -346,6 +345,27 @@ public class MainViewModel
         {
             return JsonSerializer.Serialize(new { id, ok = false, error = ex.Message }, StateOptions);
         }
+    }
+
+    private object ListSoundVolumes()
+    {
+        List<object> list = new();
+        if (_profile == null)
+        {
+            return list;
+        }
+        foreach (string key in SoundKeys)
+        {
+            if (HasKey(_profile, "sound_settings", key))
+            {
+                list.Add(new
+                {
+                    key,
+                    value = ReadDouble(_profile, "sound_settings", key)
+                });
+            }
+        }
+        return list;
     }
 
     private object ListGameProfiles()
@@ -412,7 +432,7 @@ public class MainViewModel
             CopySection(_profile!, target, "graphic_settings", CopyGraphicKeys);
             CopySection(_profile!, target, "general_settings", CopyGeneralKeys);
             CopySection(_profile!, target, "screen_settings", CopyScreenKeys);
-            CopySection(_profile!, target, "sound_settings", CopySoundKeys);
+            CopySection(_profile!, target, "sound_settings", SoundKeys);
             CopySection(_profile!, target, "crosshair_settings", CopyCrosshairKeys);
             CopyBindings(_profile!, target);
             Save(target, path);
@@ -461,38 +481,29 @@ public class MainViewModel
         }
         foreach (KeyValuePair<string, JsonNode?> pair in src)
         {
-            if (pair.Value is JsonValue jv && jv.TryGetValue<int>(out int code) && dst.ContainsKey(pair.Key))
+            if (pair.Value is JsonValue jv && dst.ContainsKey(pair.Key))
             {
-                dst[pair.Key] = JsonValue.Create(code);
+                if (jv.TryGetValue<int>(out int code))
+                {
+                    dst[pair.Key] = JsonValue.Create(code);
+                }
+                else if (jv.TryGetValue<double>(out double number))
+                {
+                    dst[pair.Key] = JsonValue.Create((int)Math.Round(number));
+                }
             }
         }
     }
 
     private object GetState()
     {
-        if (!_found || _root == null || _profile == null)
-        {
-            return new
-            {
-                found = false,
-                autoBackup = _autoBackup,
-                standbyClear = _standbyClear,
-                crunkPriority = _crunkPriority,
-                crunkIntervalMs = _crunkIntervalMs,
-                crunkBlacklist = _crunkBlacklist,
-                customLauncherDir = _customLauncherDir,
-                customJavaPath = _customJavaPath,
-                activeProfile = _profileName,
-                profiles = new List<object>()
-            };
-        }
-
+        bool ready = _found && _root != null && _profile != null;
         return new
         {
-            found = true,
-            launcherDir = _launcherDir,
-            account = _root["selectedAccount"]?.GetValue<string>() ?? "",
-            running = IsClientRunning(),
+            found = ready,
+            launcherDir = ready ? _launcherDir : "",
+            account = ready ? ReadJsonString(_root!, "selectedAccount", "") : "",
+            running = ready && IsClientRunning(),
             autoCrunk = _crunk,
             autoBackup = _autoBackup,
             standbyClear = _standbyClear,
@@ -504,56 +515,63 @@ public class MainViewModel
             activeProfile = _profileName,
             profiles = ListGameProfiles(),
             totalRamGb = _totalRamBytes / BytesPerGb,
-            profile = new
-            {
-                afLevel = ReadDouble(_profile, "graphic_settings", "af_level"),
-                renderDistance = ReadDouble(_profile, "graphic_settings", "render_distance"),
-                mipmapLevels = ReadDouble(_profile, "graphic_settings", "mipmap_levels"),
-                minimapHigh = ReadInt(_profile, "graphic_settings", "minimap_quality") == 1,
-                newRender = ReadBool(_profile, "graphic_settings", "new_render"),
-                renderRegions = ReadBool(_profile, "graphic_settings", "render_regions"),
-                showTips = ReadBool(_profile, "general_settings", "show_tips"),
-                snooper = ReadBool(_profile, "general_settings", "snooper"),
-                freezingOverlay = ReadBool(_profile, "general_settings", "freezing_overlay"),
-                bleedingOverlay = ReadBool(_profile, "general_settings", "bleeding_overlay"),
-                debugGame = ReadBool(_profile, "general_settings", "debug_mode"),
-                fpsLimit = ReadDouble(_profile, "screen_settings", "fps_limit"),
-                vSync = ReadBool(_profile, "screen_settings", "v_sync"),
-                fov = ReadDouble(_profile, "general_settings", "fov"),
-                showFps = ReadBool(_profile, "general_settings", "show_fps"),
-                cameraShake = ReadBool(_profile, "general_settings", "camera_shake"),
-                hasCameraShake = HasKey(_profile, "general_settings", "camera_shake"),
-                entitiesVolume = ReadDouble(_profile, "sound_settings", "entities_volume"),
-                hasEntitiesVolume = HasKey(_profile, "sound_settings", "entities_volume"),
-                explosionsVolume = ReadDouble(_profile, "sound_settings", "explosions_volume"),
-                hasExplosionsVolume = HasKey(_profile, "sound_settings", "explosions_volume"),
-                weaponsVolume = ReadDouble(_profile, "sound_settings", "weapons_volume"),
-                hasWeaponsVolume = HasKey(_profile, "sound_settings", "weapons_volume"),
-                hasCrosshair = _profile["crosshair_settings"] is JsonObject,
-                crosshair = new
-                {
-                    enabled = ReadBool(_profile, "crosshair_settings", "enabled"),
-                    style = ReadString(_profile, "crosshair_settings", "style"),
-                    color = ReadInt(_profile, "crosshair_settings", "color"),
-                    outlineColor = ReadInt(_profile, "crosshair_settings", "outline_color"),
-                    opacity = ReadDouble(_profile, "crosshair_settings", "opacity"),
-                    gap = ReadDouble(_profile, "crosshair_settings", "gap"),
-                    lineLength = ReadDouble(_profile, "crosshair_settings", "line_length"),
-                    lineWidth = ReadDouble(_profile, "crosshair_settings", "line_width"),
-                    dotSize = ReadDouble(_profile, "crosshair_settings", "dot_size"),
-                    outline = ReadBool(_profile, "crosshair_settings", "outline"),
-                    outlineWidth = ReadDouble(_profile, "crosshair_settings", "outline_width"),
-                    dynamicSpacing = ReadBool(_profile, "crosshair_settings", "dynamic_spacing"),
-                    dynamicVisibility = ReadBool(_profile, "crosshair_settings", "dynamic_visibility")
-                }
-            },
-            launcher = new
-            {
-                memoryGb = (_root["gameSettings"]?["maxMemoryBytes"]?.GetValue<long>() ?? 0L) / BytesPerGb,
-                fullScreen = _root["gameSettings"]?["isFullScreenEnabled"]?.GetValue<bool>() ?? false,
-                debug = _root["gameSettings"]?["isDebugEnabled"]?.GetValue<bool>() ?? false
-            },
+            soundVolumes = ListSoundVolumes(),
+            profile = BuildProfileState(),
+            launcher = BuildLauncherState(),
             bindings = GetBindings()
+        };
+    }
+
+    private object BuildProfileState()
+    {
+        JsonObject profile = _profile ?? new JsonObject();
+        return new
+        {
+            afLevel = ReadDouble(profile, "graphic_settings", "af_level"),
+            renderDistance = ReadDouble(profile, "graphic_settings", "render_distance"),
+            mipmapLevels = ReadDouble(profile, "graphic_settings", "mipmap_levels"),
+            minimapHigh = ReadInt(profile, "graphic_settings", "minimap_quality") == 1,
+            newRender = ReadBool(profile, "graphic_settings", "new_render"),
+            renderRegions = ReadBool(profile, "graphic_settings", "render_regions"),
+            showTips = ReadBool(profile, "general_settings", "show_tips"),
+            snooper = ReadBool(profile, "general_settings", "snooper"),
+            freezingOverlay = ReadBool(profile, "general_settings", "freezing_overlay"),
+            bleedingOverlay = ReadBool(profile, "general_settings", "bleeding_overlay"),
+            debugGame = ReadBool(profile, "general_settings", "debug_mode"),
+            fpsLimit = ReadDouble(profile, "screen_settings", "fps_limit"),
+            vSync = ReadBool(profile, "screen_settings", "v_sync"),
+            fov = ReadDouble(profile, "general_settings", "fov"),
+            showFps = ReadBool(profile, "general_settings", "show_fps"),
+            cameraShake = ReadBool(profile, "general_settings", "camera_shake"),
+            hasCameraShake = HasKey(profile, "general_settings", "camera_shake"),
+            hasCrosshair = profile["crosshair_settings"] is JsonObject,
+            crosshair = new
+            {
+                enabled = ReadBool(profile, "crosshair_settings", "enabled"),
+                style = ReadString(profile, "crosshair_settings", "style"),
+                color = ReadInt(profile, "crosshair_settings", "color"),
+                outlineColor = ReadInt(profile, "crosshair_settings", "outline_color"),
+                opacity = ReadDouble(profile, "crosshair_settings", "opacity"),
+                gap = ReadDouble(profile, "crosshair_settings", "gap"),
+                lineLength = ReadDouble(profile, "crosshair_settings", "line_length"),
+                lineWidth = ReadDouble(profile, "crosshair_settings", "line_width"),
+                dotSize = ReadDouble(profile, "crosshair_settings", "dot_size"),
+                outline = ReadBool(profile, "crosshair_settings", "outline"),
+                outlineWidth = ReadDouble(profile, "crosshair_settings", "outline_width"),
+                dynamicSpacing = ReadBool(profile, "crosshair_settings", "dynamic_spacing"),
+                dynamicVisibility = ReadBool(profile, "crosshair_settings", "dynamic_visibility")
+            }
+        };
+    }
+
+    private object BuildLauncherState()
+    {
+        JsonObject settings = _root?["gameSettings"] as JsonObject ?? new JsonObject();
+        return new
+        {
+            memoryGb = ReadJsonDouble(settings, "maxMemoryBytes", 0.0) / BytesPerGb,
+            fullScreen = ReadJsonBool(settings, "isFullScreenEnabled", false),
+            debug = ReadJsonBool(settings, "isDebugEnabled", false)
         };
     }
 
@@ -564,9 +582,16 @@ public class MainViewModel
         {
             foreach (KeyValuePair<string, JsonNode?> pair in kb)
             {
-                if (pair.Value is JsonValue jv && jv.TryGetValue<int>(out int code))
+                if (pair.Value is JsonValue jv)
                 {
-                    list.Add(new { key = pair.Key, code });
+                    if (jv.TryGetValue<int>(out int code))
+                    {
+                        list.Add(new { key = pair.Key, code });
+                    }
+                    else if (jv.TryGetValue<double>(out double number))
+                    {
+                        list.Add(new { key = pair.Key, code = (int)Math.Round(number) });
+                    }
                 }
             }
         }
@@ -715,7 +740,7 @@ public class MainViewModel
     private object SetSoundVolume(string key, double value)
     {
         EnsureWritable();
-        if (key != "entities_volume" && key != "explosions_volume" && key != "weapons_volume")
+        if (!Array.Exists(SoundKeys, k => string.Equals(k, key, StringComparison.Ordinal)))
         {
             throw new InvalidOperationException("key not allowed");
         }
@@ -748,23 +773,24 @@ public class MainViewModel
             case "dynamic_visibility":
                 SetSectionValue(_profile!, "crosshair_settings", key, JsonValue.Create(value.GetValue<bool>()));
                 break;
-            case "opacity":
-                SetSectionValue(_profile!, "crosshair_settings", key, JsonValue.Create(Math.Clamp(value.GetValue<double>(), 0.0, 1.0)));
+            case "style":
+                if (value is not JsonValue sv || !sv.TryGetValue<string>(out string? style) || style == null || !IsValidStyle(style))
+                {
+                    throw new InvalidOperationException("bad style");
+                }
+                SetSectionValue(_profile!, "crosshair_settings", key, JsonValue.Create(style));
                 break;
+            case "opacity":
             case "gap":
             case "line_length":
-                SetSectionValue(_profile!, "crosshair_settings", key, JsonValue.Create(Math.Clamp(value.GetValue<double>(), 0.0, 20.0)));
-                break;
             case "line_width":
             case "outline_width":
-                SetSectionValue(_profile!, "crosshair_settings", key, JsonValue.Create(Math.Clamp(value.GetValue<double>(), 0.1, 5.0)));
-                break;
             case "dot_size":
-                SetSectionValue(_profile!, "crosshair_settings", key, JsonValue.Create(Math.Clamp(value.GetValue<double>(), 0.5, 10.0)));
+                SetSectionValue(_profile!, "crosshair_settings", key, JsonValue.Create(ClampCrosshairNumber(key, value.GetValue<double>())));
                 break;
             case "color":
             case "outline_color":
-                SetSectionValue(_profile!, "crosshair_settings", key, JsonValue.Create(Math.Clamp(value.GetValue<int>(), 0, 16777215)));
+                SetSectionValue(_profile!, "crosshair_settings", key, JsonValue.Create(Math.Clamp(JsonNodeInt(value), 0, 16777215)));
                 break;
             default:
                 throw new InvalidOperationException("key not allowed");
@@ -772,6 +798,52 @@ public class MainViewModel
 
         Save(_profile!, _profilePath);
         return GetState();
+    }
+
+    private static bool IsValidStyle(string style)
+    {
+        if (style.Length == 0 || style.Length > 32)
+        {
+            return false;
+        }
+        foreach (char c in style)
+        {
+            if (!char.IsLetterOrDigit(c))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static double ClampCrosshairNumber(string key, double value)
+    {
+        return key switch
+        {
+            "opacity" => Math.Clamp(value, 0.0, 1.0),
+            "gap" => Math.Clamp(value, 0.0, 20.0),
+            "line_length" => Math.Clamp(value, 0.0, 20.0),
+            "line_width" => Math.Clamp(value, 0.1, 5.0),
+            "outline_width" => Math.Clamp(value, 0.1, 5.0),
+            "dot_size" => Math.Clamp(value, 0.5, 10.0),
+            _ => value
+        };
+    }
+
+    private static int JsonNodeInt(JsonNode node)
+    {
+        if (node is JsonValue jv)
+        {
+            if (jv.TryGetValue<int>(out int value))
+            {
+                return value;
+            }
+            if (jv.TryGetValue<double>(out double number))
+            {
+                return (int)Math.Round(number);
+            }
+        }
+        throw new InvalidOperationException("bad number");
     }
 
     private object ApplyPreset(string preset)
@@ -913,7 +985,8 @@ public class MainViewModel
             list.Add(new
             {
                 name = Path.GetFileName(dir),
-                created = Directory.GetCreationTime(dir).ToString("dd.MM.yyyy HH:mm:ss")
+                created = Directory.GetCreationTime(dir).ToString("dd.MM.yyyy HH:mm:ss"),
+                profile = BackupProfileName(dir)
             });
         }
         return list;
@@ -948,7 +1021,7 @@ public class MainViewModel
         {
             throw new InvalidOperationException("key not allowed");
         }
-        kb[key] = JsonValue.Create(value.GetValue<int>());
+        kb[key] = JsonValue.Create(JsonNodeInt(value));
         Save(_profile!, _profilePath);
         return GetState();
     }
@@ -1157,6 +1230,26 @@ public class MainViewModel
             ["fps_limit"] = JsonValue.Create(ReadDouble(_profile!, "screen_settings", "fps_limit")),
             ["v_sync"] = JsonValue.Create(ReadBool(_profile!, "screen_settings", "v_sync"))
         };
+        JsonObject sound = new();
+        foreach (string key in SoundKeys)
+        {
+            if (HasKey(_profile!, "sound_settings", key))
+            {
+                sound[key] = JsonValue.Create(ReadDouble(_profile!, "sound_settings", key));
+            }
+        }
+        JsonObject? crosshair = null;
+        if (_profile!["crosshair_settings"] is JsonObject xh)
+        {
+            crosshair = new JsonObject();
+            foreach (string key in CopyCrosshairKeys)
+            {
+                if (xh.ContainsKey(key))
+                {
+                    crosshair[key] = CloneNode(xh[key]);
+                }
+            }
+        }
         JsonObject bindings = new();
         if (_profile!["keybinding_settings"] is JsonObject kb)
         {
@@ -1168,7 +1261,7 @@ public class MainViewModel
                 }
             }
         }
-        return new JsonObject
+        JsonObject node = new()
         {
             ["app"] = JsonValue.Create("RustMeTweaker"),
             ["kind"] = JsonValue.Create("profile"),
@@ -1178,8 +1271,14 @@ public class MainViewModel
             ["graphic"] = graphic,
             ["general"] = general,
             ["screen"] = screen,
+            ["sound"] = sound,
             ["bindings"] = bindings
         };
+        if (crosshair != null)
+        {
+            node["crosshair"] = crosshair;
+        }
+        return node;
     }
 
     private static JsonObject ReadProfileFile(string path)
@@ -1262,6 +1361,63 @@ public class MainViewModel
         SetSectionValue(_profile!, "screen_settings", "fps_limit", JsonValue.Create(fps));
         SetSectionValue(_profile!, "screen_settings", "v_sync", JsonValue.Create(vsync));
 
+        if (node["sound"] is JsonObject sound && _profile!["sound_settings"] is JsonObject snd)
+        {
+            foreach (string key in SoundKeys)
+            {
+                if (sound[key] is JsonValue jv && snd.ContainsKey(key) && jv.TryGetValue<double>(out double volume))
+                {
+                    snd[key] = JsonValue.Create(Math.Clamp(volume, 0.0, 1.0));
+                }
+            }
+        }
+
+        if (node["crosshair"] is JsonObject cross && _profile!["crosshair_settings"] is JsonObject xh)
+        {
+            foreach (string key in CopyCrosshairKeys)
+            {
+                if (cross[key] is not JsonValue jv || !xh.ContainsKey(key))
+                {
+                    continue;
+                }
+                switch (key)
+                {
+                    case "enabled":
+                    case "outline":
+                    case "dynamic_spacing":
+                    case "dynamic_visibility":
+                        if (jv.TryGetValue<bool>(out bool flag))
+                        {
+                            xh[key] = JsonValue.Create(flag);
+                        }
+                        break;
+                    case "style":
+                        if (jv.TryGetValue<string>(out string? style) && style != null && IsValidStyle(style))
+                        {
+                            xh[key] = JsonValue.Create(style);
+                        }
+                        break;
+                    case "color":
+                    case "outline_color":
+                        if (jv.TryGetValue<int>(out int color))
+                        {
+                            xh[key] = JsonValue.Create(Math.Clamp(color, 0, 16777215));
+                        }
+                        else if (jv.TryGetValue<double>(out double colorNumber))
+                        {
+                            xh[key] = JsonValue.Create(Math.Clamp((int)Math.Round(colorNumber), 0, 16777215));
+                        }
+                        break;
+                    default:
+                        if (jv.TryGetValue<double>(out double number))
+                        {
+                            xh[key] = JsonValue.Create(ClampCrosshairNumber(key, number));
+                        }
+                        break;
+                }
+            }
+        }
+
         if (node["bindings"] is JsonObject binds && _profile!["keybinding_settings"] is JsonObject kb)
         {
             foreach (KeyValuePair<string, JsonNode?> pair in binds)
@@ -1276,9 +1432,16 @@ public class MainViewModel
 
     private static double ProfileDouble(JsonObject section, string key, double fallback)
     {
-        if (section[key] is JsonValue jv && jv.TryGetValue<double>(out double value))
+        if (section[key] is JsonValue jv)
         {
-            return value;
+            if (jv.TryGetValue<double>(out double value))
+            {
+                return value;
+            }
+            if (jv.TryGetValue<long>(out long number))
+            {
+                return number;
+            }
         }
         return fallback;
     }
@@ -1360,15 +1523,13 @@ public class MainViewModel
         {
             foreach (JsonNode? item in arr)
             {
-                string? s = item?.GetValue<string>();
-                if (s == null)
+                if (item is JsonValue jv && jv.TryGetValue<string>(out string? raw) && raw != null)
                 {
-                    continue;
-                }
-                string norm = NormalizeProcessName(s);
-                if (norm.Length > 0)
-                {
-                    parsed.Add(norm);
+                    string norm = NormalizeProcessName(raw);
+                    if (norm.Length > 0)
+                    {
+                        parsed.Add(norm);
+                    }
                 }
             }
         }
@@ -1406,12 +1567,16 @@ public class MainViewModel
 
     private object SetCustomPaths(string launcherDir, string javaPath)
     {
-        _customLauncherDir = launcherDir.Trim();
-        _customJavaPath = javaPath.Trim();
-        SaveTweakerConfig();
+        if (_crunk)
+        {
+            SetCrunkPriorities(false);
+        }
         StopCrunkTimer();
         _crunk = false;
         AutoCrunkToggled?.Invoke(false);
+        _customLauncherDir = launcherDir.Trim();
+        _customJavaPath = javaPath.Trim();
+        SaveTweakerConfig();
         _found = Locate();
         if (_found)
         {
@@ -1557,6 +1722,11 @@ public class MainViewModel
         Directory.CreateDirectory(dir);
         File.Copy(_rootPath, Path.Combine(dir, "root.json"), true);
         File.Copy(_profilePath, Path.Combine(dir, "profile.json"), true);
+        JsonObject meta = new()
+        {
+            ["profile"] = _profileName
+        };
+        File.WriteAllText(Path.Combine(dir, "meta.json"), meta.ToJsonString(FileOptions));
         return dir;
     }
 
@@ -1578,9 +1748,51 @@ public class MainViewModel
 
     private void DoRestore(string dir)
     {
+        string targetProfile = _profilePath;
+        string sourceProfile = BackupProfileName(dir);
+        if (sourceProfile.Length > 0 && !string.Equals(sourceProfile, _profileName, StringComparison.OrdinalIgnoreCase))
+        {
+            string path = Path.Combine(GameProfilesDir, sourceProfile, "settings.json");
+            if (File.Exists(path))
+            {
+                targetProfile = path;
+            }
+        }
         File.Copy(Path.Combine(dir, "root.json"), _rootPath, true);
-        File.Copy(Path.Combine(dir, "profile.json"), _profilePath, true);
+        File.Copy(Path.Combine(dir, "profile.json"), targetProfile, true);
+        if (!string.Equals(targetProfile, _profilePath, StringComparison.OrdinalIgnoreCase))
+        {
+            _profileName = sourceProfile;
+            _profilePath = targetProfile;
+            SaveTweakerConfig();
+        }
         Load();
+    }
+
+    private static string BackupProfileName(string dir)
+    {
+        try
+        {
+            string metaPath = Path.Combine(dir, "meta.json");
+            if (!File.Exists(metaPath))
+            {
+                return "";
+            }
+            if (JsonNode.Parse(File.ReadAllText(metaPath)) is not JsonObject meta)
+            {
+                return "";
+            }
+            string name = ReadJsonString(meta, "profile", "");
+            if (name.Length == 0 || name != Path.GetFileName(name))
+            {
+                return "";
+            }
+            return name;
+        }
+        catch
+        {
+            return "";
+        }
     }
 
     private string ResolveBackup(string name)
@@ -1724,24 +1936,90 @@ public class MainViewModel
         }
     }
 
+    private static bool ReadJsonBool(JsonObject node, string key, bool fallback)
+    {
+        if (node[key] is JsonValue jv && jv.TryGetValue<bool>(out bool value))
+        {
+            return value;
+        }
+        return fallback;
+    }
+
+    private static double ReadJsonDouble(JsonObject node, string key, double fallback)
+    {
+        if (node[key] is JsonValue jv)
+        {
+            if (jv.TryGetValue<double>(out double value))
+            {
+                return value;
+            }
+            if (jv.TryGetValue<long>(out long number))
+            {
+                return number;
+            }
+        }
+        return fallback;
+    }
+
+    private static int ReadJsonInt(JsonObject node, string key, int fallback)
+    {
+        if (node[key] is JsonValue jv)
+        {
+            if (jv.TryGetValue<int>(out int value))
+            {
+                return value;
+            }
+            if (jv.TryGetValue<double>(out double number))
+            {
+                return (int)Math.Round(number);
+            }
+        }
+        return fallback;
+    }
+
+    private static string ReadJsonString(JsonObject node, string key, string fallback)
+    {
+        if (node[key] is JsonValue jv && jv.TryGetValue<string>(out string? value) && value != null)
+        {
+            return value;
+        }
+        return fallback;
+    }
+
     private static double ReadDouble(JsonObject root, string section, string key)
     {
-        return root[section]?[key]?.GetValue<double>() ?? 0.0;
+        if (root[section] is JsonObject obj)
+        {
+            return ReadJsonDouble(obj, key, 0.0);
+        }
+        return 0.0;
     }
 
     private static int ReadInt(JsonObject root, string section, string key)
     {
-        return root[section]?[key]?.GetValue<int>() ?? 0;
+        if (root[section] is JsonObject obj)
+        {
+            return ReadJsonInt(obj, key, 0);
+        }
+        return 0;
     }
 
     private static bool ReadBool(JsonObject root, string section, string key)
     {
-        return root[section]?[key]?.GetValue<bool>() ?? false;
+        if (root[section] is JsonObject obj)
+        {
+            return ReadJsonBool(obj, key, false);
+        }
+        return false;
     }
 
     private static string ReadString(JsonObject root, string section, string key)
     {
-        return root[section]?[key]?.GetValue<string>() ?? "";
+        if (root[section] is JsonObject obj)
+        {
+            return ReadJsonString(obj, key, "");
+        }
+        return "";
     }
 
     private static JsonObject EnsureSection(JsonObject root, string section)
